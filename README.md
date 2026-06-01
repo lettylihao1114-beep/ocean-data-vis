@@ -11,8 +11,8 @@
 
 | 成员 | GitHub | 负责分支 | 职责 |
 |------|--------|---------|------|
-| 李浩 | lettylihao1114-beep | feature/backend | 后端 Spring Boot + JWT + API + Redis |
-| buliish | buliish | feature/database | SQL 脚本 + ER 图 + 接口文档 |
+| 黎浩 | lettylihao1114-beep | feature/backend | 后端 Spring Boot + JWT + API + Redis |
+| 郑伟民 | buliish | feature/database | SQL 脚本 + ER 图 + 接口文档 |
 | — | — | feature/frontend | Vue3 + Element Plus + ECharts + 地图（待定） |
 
 ---
