@@ -3,7 +3,7 @@ import { ElMessage } from 'element-plus'
 import router from '@/router'
 
 const request = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: '/',  // Vite proxy → localhost:8080
   timeout: 15000,
 })
 
