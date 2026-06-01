@@ -7,6 +7,16 @@
 
 ---
 
+## 团队分工
+
+| 成员 | GitHub | 负责分支 | 职责 |
+|------|--------|---------|------|
+| 李浩 | lettylihao1114-beep | feature/backend | 后端 Spring Boot + JWT + API + Redis |
+| buliish | buliish | feature/database | SQL 脚本 + ER 图 + 接口文档 |
+| — | — | feature/frontend | Vue3 + Element Plus + ECharts + 地图（待定） |
+
+---
+
 ## 一、项目概述
 
 基于真实南海海洋数据集（水温、盐度、洋流、潮汐、污染监测），构建一个集**数据查询、可视化大屏、污染地图、极端海况预警、科普知识、数据导出**为一体的 Web 信息系统。
