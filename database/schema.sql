@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `ocean_data` (
 -- ============================================
 CREATE TABLE IF NOT EXISTS `monitor_points` (
     `id`           BIGINT        NOT NULL AUTO_INCREMENT COMMENT '点位ID',
-    `name`         VARCHAR(100)  NOT NULL COMMENT '监测点名称',
+    `name`         VARCHAR(200) NOT NULL COMMENT '监测点名称',
     `longitude`    DECIMAL(10,6) NOT NULL COMMENT '经度',
     `latitude`     DECIMAL(9,6)  NOT NULL COMMENT '纬度',
     `type`         VARCHAR(30)   NOT NULL COMMENT '监测类型：WATER_QUALITY/POLLUTION/CURRENT/TIDE',
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `knowledge` (
     `cover_url`    VARCHAR(255)  DEFAULT NULL COMMENT '封面图URL',
     `summary`      VARCHAR(500)  DEFAULT NULL COMMENT '文章摘要',
     `content`      LONGTEXT      NOT NULL COMMENT '文章内容（Markdown）',
-    `author`       VARCHAR(50)   DEFAULT '管理员' COMMENT '作者',
+    `author`       VARCHAR(50)   NOT NULL DEFAULT 'admin' COMMENT '作者',
     `view_count`   INT           NOT NULL DEFAULT 0 COMMENT '浏览次数',
     `status`       VARCHAR(20)   NOT NULL DEFAULT 'PUBLISHED' COMMENT '状态：DRAFT/PUBLISHED',
     `create_time`  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
