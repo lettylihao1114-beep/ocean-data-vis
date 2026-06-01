@@ -1,6 +1,6 @@
 package com.ocean.config;
 
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -14,10 +14,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.time.Duration;
 
 /**
- * Redis 配置
+ * Redis 配置（仅当 Redis 可用时生效）
  */
 @Configuration
-@EnableCaching
+@ConditionalOnClass(RedisConnectionFactory.class)
 public class RedisConfig {
 
     @Bean
@@ -35,7 +35,7 @@ public class RedisConfig {
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(1))           // 默认缓存 1 小时
+                .entryTtl(Duration.ofHours(1))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
                 .disableCachingNullValues();
