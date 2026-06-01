@@ -60,7 +60,7 @@ public class OceanDataService {
     /**
      * 获取各海域最新数据（大屏概览）
      */
-    @Cacheable(value = "ocean:overview", unless = "#result == null || #result.isEmpty()")
+    
     public Map<String, OceanDataVO> getLatestByArea() {
         // 获取所有海域列表
         List<String> areas = oceanDataMapper.selectList(
