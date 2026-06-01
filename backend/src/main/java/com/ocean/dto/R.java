@@ -16,12 +16,16 @@ public class R<T> {
     private String message;
     private T data;
 
-    public static <T> R<T> ok() {
+    public static <T> R<T> ok(T data) {
+        return new R<>(200, "success", data);
+    }
+
+    public static R<Void> ok() {
         return new R<>(200, "success", null);
     }
 
-    public static <T> R<T> ok(T data) {
-        return new R<>(200, "success", data);
+    public static R<Void> ok(String message) {
+        return new R<>(200, message, null);
     }
 
     public static <T> R<T> ok(String message, T data) {

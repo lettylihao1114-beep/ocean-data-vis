@@ -41,6 +41,11 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/public/**",
+                                "/api/knowledge/public/**",
+                                "/api/ocean-data/overview",
+                                "/api/ocean-data/trend",
+                                "/api/alerts/active",
+                                "/api/monitor-points",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",

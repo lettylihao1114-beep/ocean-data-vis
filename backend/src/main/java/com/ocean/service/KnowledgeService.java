@@ -31,9 +31,8 @@ public class KnowledgeService {
     }
 
     /**
-     * 获取文章详情（公开，缓存 1 小时）
+     * 获取文章详情（公开）
      */
-    @Cacheable(value = "knowledge", key = "#id", unless = "#result == null")
     public Knowledge getById(Long id) {
         Knowledge knowledge = knowledgeMapper.selectById(id);
         if (knowledge != null) {
