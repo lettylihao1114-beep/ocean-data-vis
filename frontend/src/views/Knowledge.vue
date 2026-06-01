@@ -61,7 +61,11 @@ onMounted(fetchData)
 
     <!-- 文章详情弹窗 -->
     <el-dialog v-model="detailVisible" :title="current?.title" width="800px" top="5vh">
-      <div v-if="current" class="markdown-body" v-html="marked(current.content || '')"></div>
+      <div v-if="current" class="markdown-body">
+        <el-skeleton :loading="!current?.content" animated :rows="6" />
+        <div v-if="current?.content" v-html="marked.parse(current.content)"></div>
+        <el-empty v-else description="文章内容为空" />
+      </div>
     </el-dialog>
   </el-card>
 </template>
