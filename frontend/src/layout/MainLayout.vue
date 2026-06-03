@@ -12,6 +12,7 @@ const menuItems = [
   { path: '/data-query', title: '数据查询', icon: 'Search' },
   { path: '/monitor-map', title: '监测地图', icon: 'MapLocation' },
   { path: '/alerts', title: '预警管理', icon: 'Warning' },
+  { path: '/ai-chat', title: 'AI 助手', icon: 'ChatDotRound' },
   { path: '/knowledge', title: '科普知识', icon: 'Reading' },
   { path: '/export', title: '数据导出', icon: 'Download' },
 ]
