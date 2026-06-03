@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { alertAPI } from '@/api'
 import type { Alert } from '@/types'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
+const isAdmin = computed(() => localStorage.getItem('role') === 'ADMIN')
 const list = ref<Alert[]>([])
 const active = ref<Alert[]>([])
 const loading = ref(false)
@@ -18,9 +19,12 @@ const fetchData = async () => {
 }
 
 const handleResolve = async (id: number) => {
-  await alertAPI.resolve(id)
-  ElMessage.success('已解除')
-  fetchData()
+  try {
+    await ElMessageBox.confirm('确认解除该预警？', '提示', { type: 'warning' })
+    await alertAPI.resolve(id)
+    ElMessage.success('已解除')
+    fetchData()
+  } catch { /* 用户取消 */ }
 }
 
 const getLevelType = (level: string) => {
@@ -38,7 +42,7 @@ onMounted(fetchData)
         <el-col :span="8" v-for="a in active" :key="a.id">
           <el-alert :title="`[${a.level}] ${a.title}`" :type="getLevelType(a.level)" :description="a.content?.substring(0, 120) + '...'" show-icon style="margin-bottom: 8px">
             <template #default>
-              <el-button size="small" type="primary" @click="handleResolve(a.id!)" style="margin-top: 8px">解除预警</el-button>
+              <el-button v-if="isAdmin" size="small" type="primary" @click="handleResolve(a.id!)" style="margin-top: 8px">解除预警</el-button>
             </template>
           </el-alert>
         </el-col>
@@ -65,7 +69,7 @@ onMounted(fetchData)
         </el-table-column>
         <el-table-column label="操作" width="100">
           <template #default="{ row }">
-            <el-button v-if="row.status === 'ACTIVE'" size="small" type="primary" text @click="handleResolve(row.id)">解除</el-button>
+            <el-button v-if="row.status === 'ACTIVE' && isAdmin" size="small" type="primary" text @click="handleResolve(row.id)">解除</el-button>
           </template>
         </el-table-column>
       </el-table>

@@ -4,8 +4,8 @@
 -- 管理员账号（密码：admin123）
 -- ============================================
 INSERT INTO `users` (`username`, `password`, `email`, `role`, `status`) VALUES
-('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5Eh', 'admin@ocean.cn', 'ADMIN', 1),
-('testuser', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5Eh', 'user@ocean.cn', 'USER', 1);
+('admin', '$2a$10$mc94Nw96jnN9HZH8mP/3lezh5agXzifzxh7QVM1LfpQ6PuZkWPNpy', 'admin@ocean.cn', 'ADMIN', 1),
+('testuser', '$2a$10$mJAOdgzXGsrsyPJeS.ya8.WyklXAiGNFb/dC5kdCIKFmDV7MAbkcG', 'user@ocean.cn', 'USER', 1);
 
 -- ============================================
 -- 监测点位（南海海域 10 个关键监测点）
@@ -69,9 +69,7 @@ INSERT INTO `knowledge` (`title`, `category`, `summary`, `content`, `author`, `s
 ('海洋污染监测：守护蓝色家园', 'POLLUTION', '介绍海洋污染的来源、类型与监测手段', '# 海洋污染监测\n\n## 污染来源\n\n1. **陆源污染**：工业废水、农业径流、生活污水\n2. **海上污染**：船舶排放、石油泄漏、养殖污染\n3. **大气沉降**：重金属、持久性有机污染物\n\n## 监测指标\n\n- 化学需氧量（COD）\n- 石油类\n- 重金属（汞、镉、铅）\n- 微塑料\n\n## 南海污染现状\n\n珠江口是南海污染物输入的主要通道...', '管理员', 'PUBLISHED');
 
 -- ============================================
--- 用户测试数据
--- ⚠️ 密码需要通过 BCrypt 加密后再插入
--- admin123 → 请用代码生成（Register 接口自动加密）
+-- 测试账号（已使用 BCrypt 加密）
+-- admin / admin123（管理员）
+-- testuser / test1234（普通用户）
 -- ============================================
--- 注意：上面的 admin 和 testuser 密码占位符需要替换为真实的 BCrypt hash
--- 推荐做法：先启动项目，通过 /api/auth/register 接口注册用户

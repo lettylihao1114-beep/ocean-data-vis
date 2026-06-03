@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public R<Void> handleIllegalArgument(IllegalArgumentException e) {
-        return R.fail(e.getMessage());
+        return R.fail(400, e.getMessage());
     }
 
     @ExceptionHandler(BindException.class)
@@ -36,7 +37,16 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .map(error -> error.getDefaultMessage())
                 .orElse("参数校验失败");
-        return R.fail(message);
+        return R.fail(400, message);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public R<Void> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getAllErrors().stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage())
+                .orElse("参数校验失败");
+        return R.fail(400, message);
     }
 
     @ExceptionHandler(RuntimeException.class)

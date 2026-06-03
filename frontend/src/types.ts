@@ -71,6 +71,17 @@ export interface Alert {
   status: string
 }
 
+// 用户
+export interface User {
+  id?: number
+  username: string
+  email?: string
+  phone?: string
+  role: string
+  status: number
+  createTime?: string
+}
+
 // 科普
 export interface Knowledge {
   id?: number

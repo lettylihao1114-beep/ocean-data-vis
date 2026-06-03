@@ -43,6 +43,13 @@ export const knowledgeAPI = {
   delete: (id: number) => request.delete(`/api/knowledge/${id}`),
 }
 
+// 用户管理（管理员）
+export const userAPI = {
+  list: (params?: any) => request.get('/api/admin/users', { params }),
+  updateRole: (id: number, role: string) => request.put(`/api/admin/users/${id}/role`, { role }),
+  updateStatus: (id: number, status: number) => request.put(`/api/admin/users/${id}/status`, { status }),
+}
+
 // 导出
 export const exportAPI = {
   excel: (query?: any) => request.post('/api/export/excel', query, { responseType: 'blob' }),

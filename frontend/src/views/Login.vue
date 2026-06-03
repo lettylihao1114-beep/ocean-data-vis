@@ -26,6 +26,9 @@ const handleSubmit = async () => {
       ElMessage.success('登录成功')
       router.push('/dashboard')
     }
+  } catch (e: any) {
+    const msg = e?.response?.data?.message || e?.message || '操作失败，请重试'
+    ElMessage.error(msg)
   } finally { loading.value = false }
 }
 </script>

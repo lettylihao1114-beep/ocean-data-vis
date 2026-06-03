@@ -2,6 +2,7 @@ package com.ocean.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -16,7 +17,8 @@ public class RegisterRequest {
     private String username;
 
     @NotBlank(message = "密码不能为空")
-    @Size(min = 8, message = "密码至少8位，需包含字母和数字")
+    @Size(min = 8, message = "密码至少8位")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d).+$", message = "密码必须包含字母和数字")
     private String password;
 
     @Email(message = "邮箱格式不正确")
