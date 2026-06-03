@@ -23,7 +23,7 @@ https://ocean.geodata.cn/
 
 | 姓名 | 学号 | GitHub | 角色 | 负责模块 |
 |------|------|--------|------|---------|
-| 黎浩 | — | [lettylihao1114-beep](https://github.com/lettylihao1114-beep) | 后端架构师 + 项目管理 | 系统架构设计、数据库设计、Spring Boot 后端、JWT+RBAC 认证、RESTful API、安全防护、Redis 缓存、Knife4j 文档 |
+| 黎浩 | — | [lettylihao1114-beep](https://github.com/lettylihao1114-beep) | 后端架构师 + 全栈开发 | 系统架构设计、数据库设计、Spring Boot 后端、JWT+RBAC 认证、RESTful API、安全防护(XSS/SQL注入)、Redis 缓存、Knife4j 文档、用户管理模块、AI 大模型流式对话、代码审查与优化 |
 | 郑伟民 | — | [buliish](https://github.com/buliish) | 前端开发 + 数据可视化 | Vue3 前端框架、Leaflet 地图可视化、ECharts 数据大屏、业务页面（查询/预警/科普/导出/管理）、前后端联调、ER 图、实训报告 |
 
 ### 详细分工
@@ -34,12 +34,15 @@ https://ocean.geodata.cn/
 ├── 数据库设计（7 张表 ER 图 + schema.sql + seed.sql）
 ├── Spring Boot 3 后端框架搭建
 ├── Spring Security + JWT + RBAC 认证授权
-├── 6 个 Controller（Auth / OceanData / MonitorPoint / Alert / Knowledge / Export）
+├── 8 个 Controller（Auth / OceanData / MonitorPoint / Alert / Knowledge / Export / User / AI）
 ├── MyBatis-Plus 数据访问层 + 分页查询
-├── BCrypt 密码加密 + 防 SQL 注入（XML Mapper）+ 防 XSS
+├── BCrypt 密码加密 + 防 SQL 注入（XML Mapper）+ 防 XSS（XssFilter）
 ├── Redis 缓存集成与配置
 ├── 全局异常拦截器（GlobalExceptionHandler）
 ├── Knife4j / Swagger API 文档
+├── 用户管理模块（角色切换 / 账号启停）
+├── AI 大模型流式对话（SSE + DeepSeek API）
+├── 注册密码校验增强（字母+数字组合）
 └── 环境部署与项目配置
 
 郑伟民（前端 & 可视化）
@@ -107,6 +110,11 @@ Module 06 — 科普知识
 Module 07 — 数据导出
   ├── 查询结果 → Excel / CSV
   └── 图表 → PNG 图片
+
+Module 08 — AI 智能助手
+  ├── 大模型流式对话（DeepSeek API）
+  ├── 海洋知识问答
+  └── SSE 逐字流式输出
 ```
 
 ---
@@ -203,8 +211,8 @@ ocean-data-vis/
 | 5 | 第15周周五 | 后端开发-收尾 | 科普 API + 日志 + 全接口联调 | 日志3 |
 | 6 | 第16周周一 | 前端开发-框架 | 项目骨架、路由、登录页、布局 | — |
 | 7 | 第16周周二 | 前端开发-核心 | 数据大屏、查询页、图表组件 | 日志4 |
-| 8 | 第16周周三 | 前端开发-收尾 | 地图、预警、科普、导出页 | — |
-| 9 | 第16周周四 | 测试 | 单元测试 + 接口测试 + 功能测试 | 日志5 |
+| 8 | 第16周周三 | 前端开发-收尾 | 地图、预警、科普、导出页 + AI 助手页面 | — |
+| 9 | 第16周周四 | 测试 & 优化 | 单元测试 + 接口测试 + 功能测试 + 用户管理 + 权限审查 + XSS 防护 | 日志5 |
 | 10 | 第16周周五 | 报告撰写 | 论文 + 答辩 PPT | — |
 
 ---
