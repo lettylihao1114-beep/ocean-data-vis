@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -61,13 +62,16 @@ const router = createRouter({
   ],
 })
 
-// 路由守卫 — 未登录跳转
+// 路由守卫 — 未登录跳转 & 角色权限检查
 router.beforeEach((to, _from, next) => {
   const token = localStorage.getItem('token')
   if (to.path === '/login') {
     next()
   } else if (!token) {
     next('/login')
+  } else if (to.meta.role && to.meta.role !== localStorage.getItem('role')) {
+    ElMessage.error('权限不足，仅管理员可访问')
+    next('/dashboard')
   } else {
     next()
   }

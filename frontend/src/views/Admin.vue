@@ -1,8 +1,48 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { knowledgeAPI, monitorAPI } from '@/api'
-import { ElMessage } from 'element-plus'
-import type { Knowledge, MonitorPoint } from '@/types'
+import { knowledgeAPI, monitorAPI, userAPI } from '@/api'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type { Knowledge, MonitorPoint, User } from '@/types'
+
+// 用户管理
+const users = ref<User[]>([])
+const userTotal = ref(0)
+const userPage = ref(1)
+const userKeyword = ref('')
+
+const fetchUsers = async () => {
+  const res: any = await userAPI.list({ pageNum: userPage.value, pageSize: 10, keyword: userKeyword.value })
+  users.value = res.data?.records || []
+  userTotal.value = res.data?.total || 0
+}
+
+const changeRole = async (user: User) => {
+  try {
+    const newRole = user.role === 'ADMIN' ? 'USER' : 'ADMIN'
+    await ElMessageBox.confirm(
+      `确定将 ${user.username} 的角色${user.role === 'ADMIN' ? '降级为普通用户' : '提升为管理员'}？`,
+      '修改角色',
+      { type: 'warning' }
+    )
+    await userAPI.updateRole(user.id!, newRole)
+    ElMessage.success('角色已更新')
+    fetchUsers()
+  } catch { /* 取消 */ }
+}
+
+const toggleStatus = async (user: User) => {
+  try {
+    const newStatus = user.status === 1 ? 0 : 1
+    await ElMessageBox.confirm(
+      `确定${newStatus === 0 ? '禁用' : '启用'}账号 ${user.username}？`,
+      '切换状态',
+      { type: 'warning' }
+    )
+    await userAPI.updateStatus(user.id!, newStatus)
+    ElMessage.success(newStatus === 1 ? '账号已启用' : '账号已禁用')
+    fetchUsers()
+  } catch { /* 取消 */ }
+}
 
 // 科普管理
 const articles = ref<Knowledge[]>([])
@@ -61,6 +101,7 @@ const savePoint = async () => {
 }
 
 onMounted(() => {
+  fetchUsers()
   fetchArticles()
   fetchPoints()
 })
@@ -68,6 +109,51 @@ onMounted(() => {
 
 <template>
   <div>
+    <!-- 👤 用户管理 -->
+    <el-card header="👤 用户管理" style="margin-bottom: 16px">
+      <div style="margin-bottom: 12px; display: flex; gap: 8px">
+        <el-input v-model="userKeyword" placeholder="搜索用户名/邮箱" clearable @keyup.enter="fetchUsers" style="width: 240px" />
+        <el-button @click="fetchUsers">搜索</el-button>
+      </div>
+      <el-table :data="users" border stripe>
+        <el-table-column prop="id" label="ID" width="60" />
+        <el-table-column prop="username" label="用户名" width="120" />
+        <el-table-column prop="email" label="邮箱" width="180" />
+        <el-table-column prop="role" label="角色" width="100">
+          <template #default="{ row }">
+            <el-tag :type="row.role === 'ADMIN' ? 'danger' : 'info'" size="small">
+              {{ row.role === 'ADMIN' ? '管理员' : '普通用户' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="状态" width="90">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">
+              {{ row.status === 1 ? '正常' : '禁用' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="注册时间" width="160" />
+        <el-table-column label="操作" width="200">
+          <template #default="{ row }">
+            <el-button size="small" @click="changeRole(row)">
+              {{ row.role === 'ADMIN' ? '降为普通用户' : '提升为管理员' }}
+            </el-button>
+            <el-button size="small" :type="row.status === 1 ? 'danger' : 'success'" @click="toggleStatus(row)">
+              {{ row.status === 1 ? '禁用' : '启用' }}
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        v-model:current-page="userPage"
+        :total="userTotal"
+        layout="total, prev, pager, next"
+        @current-change="fetchUsers"
+        style="margin-top: 12px; justify-content: flex-end"
+      />
+    </el-card>
+
     <el-card header="📚 科普文章管理" style="margin-bottom: 16px">
       <el-button type="primary" @click="currentArticle = { title: '', category: '', content: '', status: 'PUBLISHED' }; isEdit = false; articleDialog = true" style="margin-bottom: 12px">新建文章</el-button>
       <el-table :data="articles" border stripe>
