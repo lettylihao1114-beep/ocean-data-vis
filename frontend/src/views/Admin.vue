@@ -74,9 +74,12 @@ const saveArticle = async () => {
 }
 
 const deleteArticle = async (id: number) => {
-  await knowledgeAPI.delete(id)
-  ElMessage.success('已删除')
-  fetchArticles()
+  try {
+    await ElMessageBox.confirm('确定删除该文章？此操作不可恢复。', '警告', { type: 'warning', confirmButtonText: '删除', cancelButtonText: '取消' })
+    await knowledgeAPI.delete(id)
+    ElMessage.success('已删除')
+    fetchArticles()
+  } catch { /* 取消 */ }
 }
 
 // 监测点管理
@@ -185,7 +188,7 @@ onMounted(() => {
         <el-table-column label="操作" width="160">
           <template #default="{ row }">
             <el-button size="small" @click="currentPoint = { ...row }; pointDialog = true">编辑</el-button>
-            <el-button size="small" type="danger" @click="monitorAPI.delete(row.id!).then(fetchPoints)">删除</el-button>
+            <el-button size="small" type="danger" @click="ElMessageBox.confirm('确定删除该监测点？', '警告', { type: 'warning' }).then(() => monitorAPI.delete(row.id!)).then(fetchPoints)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

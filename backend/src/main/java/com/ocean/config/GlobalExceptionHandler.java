@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public R<Void> handleIllegalArgument(IllegalArgumentException e) {
-        return R.fail(e.getMessage());
+        return R.fail(400, e.getMessage());
     }
 
     @ExceptionHandler(BindException.class)

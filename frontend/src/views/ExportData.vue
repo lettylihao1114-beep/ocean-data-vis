@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { oceanDataAPI, exportAPI } from '@/api'
+import { ElMessage } from 'element-plus'
 
 const downloading = ref(false)
 const query = ref({
@@ -15,14 +16,18 @@ const handleExport = async () => {
   try {
     const fn = format.value === 'excel' ? exportAPI.excel : exportAPI.csv
     const res: any = await fn(query.value)
-    const blob = new Blob([res], { type: format.value === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'text/csv' })
+    // axios responseType: 'blob' 时，response.data 就是 Blob
+    const blob = res instanceof Blob ? res : new Blob([res], { type: format.value === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'text/csv' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
     a.download = `ocean_data_export.${format.value === 'excel' ? 'xlsx' : 'csv'}`
     a.click()
     URL.revokeObjectURL(url)
-  } catch {}
+    ElMessage.success('导出成功')
+  } catch (e: any) {
+    ElMessage.error('导出失败，请重试')
+  }
   downloading.value = false
 }
 </script>
