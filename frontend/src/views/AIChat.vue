@@ -63,20 +63,49 @@ const sendMessage = async () => {
 
     const decoder = new TextDecoder()
     let buffer = ''
+    let streamDone = false
 
-    while (true) {
+    // 安全超时：30 秒无响应自动停止
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    const resetTimeout = () => {
+      if (timeoutId) clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        if (!streamDone) {
+          streamDone = true
+          reader.cancel()
+        }
+      }, 30_000)
+    }
+    resetTimeout()
+
+    while (!streamDone) {
       const { done, value } = await reader.read()
       if (done) break
 
+      resetTimeout()
       buffer += decoder.decode(value, { stream: true })
       const lines = buffer.split('\n')
       buffer = lines.pop() || ''
 
       for (const line of lines) {
+        if (line.startsWith('event:done')) {
+          streamDone = true
+          break
+        }
+        if (line.startsWith('event:error')) {
+          const errLine = lines.find(l => l.startsWith('data:'))
+          const errMsg = errLine ? errLine.substring(5).trim() : 'AI 服务异常'
+          const lastMsg = messages.value[messages.value.length - 1]
+          if (lastMsg && lastMsg.role === 'assistant') {
+            lastMsg.content += `\n\n⚠️ ${errMsg}`
+          }
+          streamDone = true
+          break
+        }
         if (line.startsWith('event:token')) continue
         if (line.startsWith('data:')) {
           const data = line.substring(5).trim()
-          if (data && data !== '[DONE]') {
+          if (data) {
             const lastMsg = messages.value[messages.value.length - 1]
             if (lastMsg && lastMsg.role === 'assistant') {
               lastMsg.content += data
@@ -85,9 +114,10 @@ const sendMessage = async () => {
             }
           }
         }
-        if (line.startsWith('event:error')) continue
       }
     }
+
+    if (timeoutId) clearTimeout(timeoutId)
   } catch (e: any) {
     if (e.name !== 'AbortError') {
       const lastMsg = messages.value[messages.value.length - 1]
