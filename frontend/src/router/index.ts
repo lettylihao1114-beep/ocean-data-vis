@@ -46,6 +46,12 @@ const router = createRouter({
           meta: { title: '科普知识' },
         },
         {
+          path: 'ai-chat',
+          name: 'AIChat',
+          component: () => import('@/views/AIChat.vue'),
+          meta: { title: 'AI 助手' },
+        },
+        {
           path: 'export',
           name: 'Export',
           component: () => import('@/views/ExportData.vue'),
