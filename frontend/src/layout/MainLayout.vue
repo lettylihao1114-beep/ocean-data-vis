@@ -3,6 +3,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { ElMessageBox } from 'element-plus'
 import { computed } from 'vue'
+import SvgIcon from '@/components/SvgIcon.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -56,7 +57,7 @@ const handleLogout = () => {
         </div>
         <div class="banner-right">
           <span class="banner-user">
-            👤 {{ authStore.username }}
+            <SvgIcon name="user" :size="16"/> {{ authStore.username }}
             <span v-if="authStore.role === 'ADMIN'" class="banner-admin-badge">管理员</span>
           </span>
           <button class="banner-logout" @click="handleLogout">退出</button>
@@ -114,7 +115,7 @@ const handleLogout = () => {
         </div>
         <div class="footer-col">
           <strong>联系方式</strong>
-          <p>📧 ocean@nmdis.org.cn<br/>📍 信息系统综合实训课程项目</p>
+          <p>✉️ ocean@nmdis.org.cn<br/>信息系统综合实训课程项目</p>
         </div>
       </div>
       <div class="footer-bottom">

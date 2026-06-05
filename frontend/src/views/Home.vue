@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { oceanDataAPI, alertAPI, monitorAPI, knowledgeAPI } from '@/api'
 import type { OceanData, Alert, MonitorPoint, Knowledge } from '@/types'
+import SvgIcon from '@/components/SvgIcon.vue'
 
 const router = useRouter()
 
@@ -32,19 +33,19 @@ onMounted(async () => {
 })
 
 const dataCategories = [
-  { key: 'temperature', title: '海水温度', icon: '🌡️', desc: '表层与垂直水温分布', color: '#ef4444', bg: '#fef2f2', path: '/data-query' },
-  { key: 'salinity', title: '海水盐度', icon: '💎', desc: '盐度时空变化特征', color: '#0ea5e9', bg: '#eff6ff', path: '/data-query' },
-  { key: 'current', title: '洋流系统', icon: '🔄', desc: '季风环流与深层洋流', color: '#06b6d4', bg: '#ecfeff', path: '/data-query' },
-  { key: 'tide', title: '潮汐监测', icon: '🌙', desc: '全日潮与半日潮数据', color: '#8b5cf6', bg: '#f5f3ff', path: '/data-query' },
-  { key: 'pollution', title: '污染监测', icon: '🛡️', desc: 'COD·重金属·微塑料', color: '#f59e0b', bg: '#fffbeb', path: '/monitor-map' },
-  { key: 'ecology', title: '海洋生态', icon: '🐠', desc: '珊瑚礁·红树林·生物多样性', color: '#10b981', bg: '#ecfdf5', path: '/knowledge' },
+  { key: 'temperature', title: '海水温度', icon: 'thermometer', desc: '表层与垂直水温分布', color: '#ef4444', bg: '#fef2f2', path: '/data-query' },
+  { key: 'salinity', title: '海水盐度', icon: 'droplet', desc: '盐度时空变化特征', color: '#0ea5e9', bg: '#eff6ff', path: '/data-query' },
+  { key: 'current', title: '洋流系统', icon: 'cycle', desc: '季风环流与深层洋流', color: '#06b6d4', bg: '#ecfeff', path: '/data-query' },
+  { key: 'tide', title: '潮汐监测', icon: 'moon', desc: '全日潮与半日潮数据', color: '#8b5cf6', bg: '#f5f3ff', path: '/data-query' },
+  { key: 'pollution', title: '污染监测', icon: 'shield', desc: 'COD·重金属·微塑料', color: '#f59e0b', bg: '#fffbeb', path: '/monitor-map' },
+  { key: 'ecology', title: '海洋生态', icon: 'fish', desc: '珊瑚礁·红树林·生物多样性', color: '#10b981', bg: '#ecfdf5', path: '/knowledge' },
 ]
 
 const quickActions = [
-  { title: '数据大屏', icon: '📊', desc: 'ECharts 多图表联动', path: '/dashboard', color: '#0ea5e9' },
-  { title: 'AI 助手', icon: '🤖', desc: 'RAG 检索增强问答', path: '/ai-chat', color: '#06b6d4' },
-  { title: '监测地图', icon: '🗺️', desc: 'Leaflet 点位标注', path: '/monitor-map', color: '#10b981' },
-  { title: '数据导出', icon: '📥', desc: 'Excel / CSV 导出', path: '/export', color: '#f59e0b' },
+  { title: '数据大屏', icon: 'chart', desc: 'ECharts 多图表联动', path: '/dashboard', color: '#0ea5e9' },
+  { title: 'AI 助手', icon: 'bot', desc: 'RAG 检索增强问答', path: '/ai-chat', color: '#06b6d4' },
+  { title: '监测地图', icon: 'map', desc: 'Leaflet 点位标注', path: '/monitor-map', color: '#10b981' },
+  { title: '数据导出', icon: 'download', desc: 'Excel / CSV 导出', path: '/export', color: '#f59e0b' },
 ]
 
 const alertLevelMap: Record<string, { label: string; color: string }> = {
@@ -70,9 +71,9 @@ const goTo = (path: string) => router.push(path)
           提供水温、盐度、洋流、潮汐、污染监测等海洋环境数据的查询、可视化、预警与 AI 智能分析服务。
         </p>
         <div class="hero-actions">
-          <button class="hero-btn primary" @click="goTo('/dashboard')">📊 进入数据大屏</button>
-          <button class="hero-btn" @click="goTo('/data-query')">🔍 数据查询</button>
-          <button class="hero-btn" @click="goTo('/ai-chat')">🤖 AI 助手</button>
+          <button class="hero-btn primary" @click="goTo('/dashboard')"><SvgIcon name="chart" :size="16"/> 进入数据大屏</button>
+          <button class="hero-btn" @click="goTo('/data-query')"><SvgIcon name="search" :size="16"/> 数据查询</button>
+          <button class="hero-btn" @click="goTo('/ai-chat')"><SvgIcon name="bot" :size="16"/> AI 助手</button>
         </div>
         <div class="hero-stats">
           <div class="hero-stat">
@@ -98,7 +99,7 @@ const goTo = (path: string) => router.push(path)
     <!-- 数据分类卡片 -->
     <section class="section">
       <div class="section-header">
-        <h2><span class="section-icon">📂</span> 数据分类</h2>
+        <h2><SvgIcon name="folder" :size="22" color="#0ea5e9"/> 数据分类</h2>
         <p>覆盖南海海洋环境核心监测指标</p>
       </div>
       <div class="category-grid">
@@ -111,7 +112,7 @@ const goTo = (path: string) => router.push(path)
           <div class="category-accent" :style="{ background: cat.color }"></div>
           <div class="category-body">
             <div class="category-icon-wrap" :style="{ background: cat.bg }">
-              <span class="category-icon">{{ cat.icon }}</span>
+              <SvgIcon :name="cat.icon" :size="24" :color="cat.color"/>
             </div>
             <div class="category-info">
               <h3>{{ cat.title }}</h3>
@@ -125,7 +126,7 @@ const goTo = (path: string) => router.push(path)
     <!-- 预警 + 快览 -->
     <section class="section" v-if="activeAlerts.length">
       <div class="section-header">
-        <h2><span class="section-icon">⚠️</span> 实时预警</h2>
+        <h2><SvgIcon name="alert" :size="22" color="#ef4444"/> 实时预警</h2>
         <p>当前活跃预警信息</p>
       </div>
       <div class="alert-list">
@@ -143,7 +144,7 @@ const goTo = (path: string) => router.push(path)
     <!-- 科普知识 -->
     <section class="section">
       <div class="section-header">
-        <h2><span class="section-icon">📖</span> 科普知识</h2>
+        <h2><SvgIcon name="book" :size="22" color="#0ea5e9"/> 科普知识</h2>
         <p>了解南海海洋科学</p>
       </div>
       <div class="knowledge-grid">
@@ -154,7 +155,11 @@ const goTo = (path: string) => router.push(path)
           @click="goTo('/knowledge')"
         >
           <div class="knowledge-card-img">
-            <span class="knowledge-card-emoji">{{ item.category === 'OCEAN_CURRENT' ? '🔄' : item.category === 'TIDE' ? '🌙' : item.category === 'POLLUTION' ? '🛡️' : item.category === 'ECOLOGY' ? '🐠' : item.category === 'GEOGRAPHY' ? '🌊' : item.category === 'WATER_QUALITY' ? '🌡️' : '📖' }}</span>
+            <SvgIcon
+              :name="item.category === 'OCEAN_CURRENT' ? 'cycle' : item.category === 'TIDE' ? 'moon' : item.category === 'POLLUTION' ? 'shield' : item.category === 'ECOLOGY' ? 'fish' : item.category === 'GEOGRAPHY' ? 'wave' : item.category === 'WATER_QUALITY' ? 'thermometer' : 'book'"
+              :size="28"
+              :color="item.category === 'OCEAN_CURRENT' ? '#06b6d4' : item.category === 'TIDE' ? '#8b5cf6' : item.category === 'POLLUTION' ? '#f59e0b' : item.category === 'ECOLOGY' ? '#10b981' : item.category === 'GEOGRAPHY' ? '#0ea5e9' : item.category === 'WATER_QUALITY' ? '#ef4444' : '#0ea5e9'"
+            />
           </div>
           <div class="knowledge-card-body">
             <h4>{{ item.title }}</h4>
@@ -167,7 +172,7 @@ const goTo = (path: string) => router.push(path)
     <!-- 快捷入口 -->
     <section class="section">
       <div class="section-header">
-        <h2><span class="section-icon">⚡</span> 快捷入口</h2>
+        <h2><SvgIcon name="zap" :size="22" color="#f59e0b"/> 快捷入口</h2>
         <p>快速跳转到各功能模块</p>
       </div>
       <div class="quick-grid">
@@ -178,7 +183,7 @@ const goTo = (path: string) => router.push(path)
           @click="goTo(act.path)"
           :style="{ '--accent': act.color }"
         >
-          <span class="quick-icon">{{ act.icon }}</span>
+          <SvgIcon :name="act.icon" :size="28" :color="act.color"/>
           <div class="quick-info">
             <h3>{{ act.title }}</h3>
             <p>{{ act.desc }}</p>
@@ -216,7 +221,9 @@ const goTo = (path: string) => router.push(path)
   padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
   border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08);
   color: rgba(255,255,255,.85); cursor: pointer; transition: .2s;
+  display: inline-flex; align-items: center; gap: 6px;
 }
+.hero-btn :deep(svg) { vertical-align: middle; }
 .hero-btn:hover { background: rgba(255,255,255,.16); color: #fff; }
 .hero-btn.primary { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
 .hero-btn.primary:hover { background: #06b6d4; }
@@ -228,8 +235,7 @@ const goTo = (path: string) => router.push(path)
 /* ========== Section 通用 ========== */
 .section { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
 .section-header { text-align: center; margin-bottom: 28px; }
-.section-header h2 { font-size: 22px; color: #0a3d62; margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; }
-.section-icon { font-size: 24px; }
+.section-header h2 { font-size: 22px; color: #0a3d62; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; }
 .section-header p { color: #94a3b8; font-size: 13px; margin: 6px 0 0; }
 
 /* ========== 数据分类卡片 ========== */
@@ -243,7 +249,6 @@ const goTo = (path: string) => router.push(path)
 .category-accent { width: 4px; flex-shrink: 0; }
 .category-body { display: flex; align-items: center; gap: 14px; padding: 18px 20px; flex: 1; }
 .category-icon-wrap { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.category-icon { font-size: 22px; }
 .category-info h3 { margin: 0; font-size: 15px; color: #1e293b; font-weight: 600; }
 .category-info p { margin: 3px 0 0; font-size: 12px; color: #94a3b8; }
 
@@ -271,7 +276,6 @@ const goTo = (path: string) => router.push(path)
   width: 80px; display: flex; align-items: center; justify-content: center;
   background: linear-gradient(135deg, #eff6ff, #ecfeff); flex-shrink: 0;
 }
-.knowledge-card-emoji { font-size: 28px; }
 .knowledge-card-body { padding: 14px 16px; flex: 1; min-width: 0; }
 .knowledge-card-body h4 { margin: 0; font-size: 14px; color: #1e293b; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .knowledge-card-body p { margin: 4px 0 0; font-size: 12px; color: #94a3b8; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -285,7 +289,7 @@ const goTo = (path: string) => router.push(path)
   border-left: 4px solid var(--accent, #0ea5e9);
 }
 .quick-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6,32,58,.08); }
-.quick-icon { font-size: 28px; flex-shrink: 0; }
+.quick-icon-wrap { flex-shrink: 0; }
 .quick-info { flex: 1; }
 .quick-info h3 { margin: 0; font-size: 15px; color: #1e293b; font-weight: 600; }
 .quick-info p { margin: 3px 0 0; font-size: 12px; color: #94a3b8; }
