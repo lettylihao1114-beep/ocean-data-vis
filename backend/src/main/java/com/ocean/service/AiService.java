@@ -156,7 +156,6 @@ public class AiService {
         prompt.append("\n要求：\n");
         prompt.append("- 回答简洁专业，用中文\n");
         prompt.append("- 涉及数据时引用具体指标（温度°C、盐度PSU、溶氧mg/L等）\n");
-        prompt.append("- 如果问题超出海洋领域，友好地引导用户回到海洋话题\n");
         prompt.append("- 每次回答控制在 300 字以内");
 
         // 注入 RAG 检索到的知识库上下文
@@ -164,6 +163,21 @@ public class AiService {
             prompt.append("\n\n---\n以下是知识库中与用户问题相关的参考资料，请参考这些内容回答问题：\n\n");
             prompt.append(ragContext);
             prompt.append("\n请基于以上参考资料回答，如果参考资料不足以回答问题，请如实说明。");
+        } else {
+            // 未匹配到相关知识 — 要求 AI 拒绝回答并引导用户
+            prompt.append("\n\n---\n");
+            prompt.append("⚠️ 重要：系统知识库中没有找到与该问题相关的资料。");
+            prompt.append("请不要尝试用自己的知识回答，而是：\n");
+            prompt.append("1. 礼貌告知用户该问题暂未收录\n");
+            prompt.append("2. 列出你可以回答的话题类型，引导用户重新提问\n");
+            prompt.append("\n你可以回答的话题包括：\n");
+            prompt.append("- 🌊 南海地理概况（范围、边界、岛礁、海峡）\n");
+            prompt.append("- 🌡️ 海水温度与盐度（季节变化、垂直分布）\n");
+            prompt.append("- 🔄 洋流系统（表层环流、深层环流、季风影响）\n");
+            prompt.append("- 🌙 潮汐特征（成因、潮差、北部湾强潮区）\n");
+            prompt.append("- 🛡️ 海洋污染监测（污染来源、监测指标、珠江口）\n");
+            prompt.append("- 🐠 海洋生态保护（珊瑚礁、红树林、生物多样性）\n");
+            prompt.append("- 📊 系统功能使用（数据大屏、监测地图、数据导出等）");
         }
 
         system.put("content", prompt.toString());
