@@ -51,12 +51,18 @@ jwt:
   secret: ocean-data-vis-2025-south-china-sea-jwt-secret-key-must-be-long-enough
   expiration: 86400000  # 24小时
 
-# AI 大模型配置（DeepSeek，兼容 OpenAI 格式）
+# AI 大模型配置
 ai:
+  # DeepSeek 对话模型
   deepseek:
     key: sk-f4e6df38593942d39c06d6787557975f
     url: https://api.deepseek.com/v1/chat/completions
     model: deepseek-chat
+  # SiliconFlow 嵌入模型（向量 RAG）
+  siliconflow:
+    key: sk-leonsxrichaxesttpdfrejtuxepbebhyxwjatuljyepzpxte
+    url: https://api.siliconflow.cn/v1/embeddings
+    model: BAAI/bge-large-zh-v1.5
 
 # Knife4j API文档
 springdoc:

@@ -2,11 +2,10 @@ package com.ocean.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.BufferedReader;
@@ -21,10 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * AI 对话服务 — 流式调用 DeepSeek API
+ * AI 对话服务 — 流式调用 DeepSeek API，接入向量 RAG 知识检索
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AiService {
 
     @Value("${ai.deepseek.key}")
@@ -37,9 +37,10 @@ public class AiService {
     private String model;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final KnowledgeVectorStore knowledgeVectorStore;
 
     /**
-     * 流式对话
+     * 流式对话（含 RAG 检索增强）
      */
     public SseEmitter chat(String userMessage, List<Map<String, String>> history) {
         SseEmitter emitter = new SseEmitter(300_000L); // 5 分钟超时
@@ -47,8 +48,16 @@ public class AiService {
         new Thread(() -> {
             HttpURLConnection conn = null;
             try {
-                // 构建请求体
-                List<Map<String, String>> messages = buildMessages(userMessage, history);
+                // RAG 检索：从知识库匹配相关文章（失败不影响对话）
+                String ragContext = "";
+                try {
+                    ragContext = knowledgeVectorStore.retrieveContext(userMessage, 3);
+                } catch (Exception e) {
+                    log.warn("RAG retrieval failed, proceeding without context", e);
+                }
+
+                // 构建消息列表（注入 RAG 上下文）
+                List<Map<String, String>> messages = buildMessages(userMessage, history, ragContext);
                 Map<String, Object> body = new HashMap<>();
                 body.put("model", model);
                 body.put("messages", messages);
@@ -126,28 +135,38 @@ public class AiService {
     }
 
     /**
-     * 构建消息列表 — 系统提示词 + 历史对话
+     * 构建消息列表 — 系统提示词（含 RAG 上下文）+ 历史对话
      */
-    private List<Map<String, String>> buildMessages(String userMessage, List<Map<String, String>> history) {
+    private List<Map<String, String>> buildMessages(String userMessage,
+                                                     List<Map<String, String>> history,
+                                                     String ragContext) {
         List<Map<String, String>> messages = new ArrayList<>();
 
         // 系统提示词
         Map<String, String> system = new HashMap<>();
         system.put("role", "system");
-        system.put("content",
-            "你是南海海洋环境数据可视化系统的 AI 助手，名为「南海智答」。\n" +
-            "你的职责：\n" +
-            "1. 回答用户关于南海海洋环境的问题（水温、盐度、洋流、潮汐、污染、海洋生态等）\n" +
-            "2. 解释海洋科学概念，帮助用户理解数据含义\n" +
-            "3. 提供海洋环境保护建议和科学知识\n" +
-            "4. 如果用户询问当前系统内的数据，请告知用户可以在数据大屏、数据查询、监测地图等页面查看\n" +
-            "\n" +
-            "要求：\n" +
-            "- 回答简洁专业，用中文\n" +
-            "- 涉及数据时引用具体指标（温度°C、盐度PSU、溶氧mg/L等）\n" +
-            "- 如果问题超出海洋领域，友好地引导用户回到海洋话题\n" +
-            "- 每次回答控制在 300 字以内"
-        );
+
+        StringBuilder prompt = new StringBuilder();
+        prompt.append("你是南海海洋环境数据可视化系统的 AI 助手，名为「南海智答」。\n");
+        prompt.append("你的职责：\n");
+        prompt.append("1. 回答用户关于南海海洋环境的问题（水温、盐度、洋流、潮汐、污染、海洋生态等）\n");
+        prompt.append("2. 解释海洋科学概念，帮助用户理解数据含义\n");
+        prompt.append("3. 提供海洋环境保护建议和科学知识\n");
+        prompt.append("4. 如果用户询问当前系统内的数据，请告知用户可以在数据大屏、数据查询、监测地图等页面查看\n");
+        prompt.append("\n要求：\n");
+        prompt.append("- 回答简洁专业，用中文\n");
+        prompt.append("- 涉及数据时引用具体指标（温度°C、盐度PSU、溶氧mg/L等）\n");
+        prompt.append("- 如果问题超出海洋领域，友好地引导用户回到海洋话题\n");
+        prompt.append("- 每次回答控制在 300 字以内");
+
+        // 注入 RAG 检索到的知识库上下文
+        if (ragContext != null && !ragContext.isEmpty()) {
+            prompt.append("\n\n---\n以下是知识库中与用户问题相关的参考资料，请参考这些内容回答问题：\n\n");
+            prompt.append(ragContext);
+            prompt.append("\n请基于以上参考资料回答，如果参考资料不足以回答问题，请如实说明。");
+        }
+
+        system.put("content", prompt.toString());
         messages.add(system);
 
         // 历史对话（最近 10 轮）
