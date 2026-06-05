@@ -4,7 +4,8 @@ server:
 spring:
   application:
     name: ocean-data-vis
-  # Redis 已配置，自动启用缓存
+  cache:
+    type: redis
 
   # 数据源
   datasource:

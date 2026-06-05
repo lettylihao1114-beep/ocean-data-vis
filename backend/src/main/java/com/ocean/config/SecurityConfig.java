@@ -46,16 +46,31 @@ public class SecurityConfig {
                                 "/api/ocean-data/trend",
                                 "/api/alerts/active",
                                 "/api/monitor-points",
+                                "/api/monitor-points/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/doc.html",
                                 "/webjars/**"
                         ).permitAll()
-                        // 管理员接口
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // 其他接口需要认证
+                        // 管理员专享
+                        .requestMatchers("/api/admin/**", "/api/alerts/**").hasRole("ADMIN")
+                        // 其他接口需登录（数据查询/导出/AI助手 等）
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        // 未认证（无 token / token 过期）→ 401，前端自动跳登录页
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(401);
+                            response.getWriter().write("{\"code\":401,\"message\":\"请先登录\"}");
+                        })
+                        // 已认证但角色不足 → 403，前端提示"权限不足"
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(403);
+                            response.getWriter().write("{\"code\":403,\"message\":\"权限不足\"}");
+                        })
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
