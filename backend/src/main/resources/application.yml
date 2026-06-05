@@ -11,8 +11,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ocean_vis?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: 123456
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
 
   # Redis
   data:
@@ -48,19 +48,19 @@ mybatis-plus:
 
 # JWT
 jwt:
-  secret: ocean-data-vis-2025-south-china-sea-jwt-secret-key-must-be-long-enough
+  secret: ${JWT_SECRET:ocean-data-vis-2025-south-china-sea-jwt-secret-key-must-be-long-enough}
   expiration: 86400000  # 24小时
 
 # AI 大模型配置
 ai:
   # DeepSeek 对话模型
   deepseek:
-    key: sk-f4e6df38593942d39c06d6787557975f
+    key: ${DEEPSEEK_API_KEY}
     url: https://api.deepseek.com/v1/chat/completions
     model: deepseek-chat
   # SiliconFlow 嵌入模型（向量 RAG）
   siliconflow:
-    key: sk-leonsxrichaxesttpdfrejtuxepbebhyxwjatuljyepzpxte
+    key: ${SILICONFLOW_API_KEY}
     url: https://api.siliconflow.cn/v1/embeddings
     model: BAAI/bge-large-zh-v1.5
 

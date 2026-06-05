@@ -103,6 +103,13 @@
             <version>${knife4j.version}</version>
         </dependency>
 
+        <!-- Dotenv (load .env into system properties) -->
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>java-dotenv</artifactId>
+            <version>5.2.2</version>
+        </dependency>
+
         <!-- EasyExcel -->
         <dependency>
             <groupId>com.alibaba</groupId>

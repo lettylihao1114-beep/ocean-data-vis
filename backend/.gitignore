@@ -32,6 +32,10 @@ build/
 ### VS Code ###
 .vscode/
 
+### Environment ###
+.env
+application-secret.yml
+
 ### Maven ###
 .mvn/
 mvnw
