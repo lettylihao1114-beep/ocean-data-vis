@@ -37,7 +37,7 @@ const router = createRouter({
           path: 'alerts',
           name: 'Alerts',
           component: () => import('@/views/Alerts.vue'),
-          meta: { title: '预警管理' },
+          meta: { title: '预警管理', role: 'ADMIN' },
         },
         {
           path: 'knowledge',

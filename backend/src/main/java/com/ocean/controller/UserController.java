@@ -1,6 +1,6 @@
 package com.ocean.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ocean.dto.PageVO;
 import com.ocean.dto.R;
 import com.ocean.entity.User;
 import com.ocean.service.UserService;
@@ -26,7 +26,7 @@ public class UserController {
 
     @Operation(summary = "用户列表（不含密码）")
     @GetMapping
-    public R<Page<User>> list(
+    public R<PageVO<User>> list(
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String keyword) {

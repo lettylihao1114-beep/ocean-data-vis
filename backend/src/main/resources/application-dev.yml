@@ -1,6 +1,24 @@
-# 开发环境配置（无需 Redis）
+# 开发环境配置（Redis 缓存已启用）
 spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+# 缓存 TTL 配置（秒）
+cache:
+  ttl:
+    ocean-latest: 300      # 大屏概览 5 min
+    ocean-list: 180        # 列表查询 3 min
+    ocean-page: 180        # 分页查询 3 min
+    ocean-trend: 300       # 趋势数据 5 min
+    knowledge-page: 1800   # 科普列表 30 min
+    monitor-list: 3600     # 监测点位 1 h
+    alert-active: 60       # 活跃预警 1 min

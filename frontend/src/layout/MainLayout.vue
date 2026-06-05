@@ -11,13 +11,15 @@ const menuItems = [
   { path: '/dashboard', title: '数据大屏', icon: 'DataAnalysis' },
   { path: '/data-query', title: '数据查询', icon: 'Search' },
   { path: '/monitor-map', title: '监测地图', icon: 'MapLocation' },
-  { path: '/alerts', title: '预警管理', icon: 'Warning' },
   { path: '/ai-chat', title: 'AI 助手', icon: 'ChatDotRound' },
   { path: '/knowledge', title: '科普知识', icon: 'Reading' },
   { path: '/export', title: '数据导出', icon: 'Download' },
 ]
 
-const adminMenu = { path: '/admin', title: '系统管理', icon: 'Setting' }
+const adminMenus = [
+  { path: '/alerts', title: '预警管理', icon: 'Warning' },
+  { path: '/admin', title: '系统管理', icon: 'Setting' },
+]
 
 const handleLogout = () => {
   ElMessageBox.confirm('确定退出登录？', '提示', { type: 'warning' }).then(() => {
@@ -46,10 +48,12 @@ const handleLogout = () => {
           <el-icon><component :is="item.icon" /></el-icon>
           <span>{{ item.title }}</span>
         </el-menu-item>
-        <el-menu-item v-if="authStore.role === 'ADMIN'" :index="adminMenu.path">
-          <el-icon><component :is="adminMenu.icon" /></el-icon>
-          <span>{{ adminMenu.title }}</span>
-        </el-menu-item>
+        <template v-if="authStore.role === 'ADMIN'">
+          <el-menu-item v-for="item in adminMenus" :key="item.path" :index="item.path">
+            <el-icon><component :is="item.icon" /></el-icon>
+            <span>{{ item.title }}</span>
+          </el-menu-item>
+        </template>
       </el-menu>
     </el-aside>
 

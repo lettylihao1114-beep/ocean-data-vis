@@ -2,6 +2,7 @@ package com.ocean.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ocean.dto.PageVO;
 import com.ocean.entity.User;
 import com.ocean.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 /**
- * 用户管理服务
+ * 用户管理服务（管理员专用，低频，不缓存）
  */
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class UserService {
     /**
      * 分页查询用户（不返回密码）
      */
-    public Page<User> pageUsers(int pageNum, int pageSize, String keyword) {
+    public PageVO<User> pageUsers(int pageNum, int pageSize, String keyword) {
         Page<User> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         if (StringUtils.hasText(keyword)) {
@@ -30,7 +31,7 @@ public class UserService {
         Page<User> result = userMapper.selectPage(page, wrapper);
         // 脱敏：清除密码字段
         result.getRecords().forEach(u -> u.setPassword(null));
-        return result;
+        return PageVO.from(result);
     }
 
     /**

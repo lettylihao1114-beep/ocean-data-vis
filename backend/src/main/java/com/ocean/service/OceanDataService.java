@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ocean.dto.OceanDataQuery;
 import com.ocean.dto.OceanDataVO;
+import com.ocean.dto.PageVO;
 import com.ocean.entity.OceanData;
 import com.ocean.mapper.OceanDataMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * 海洋数据服务
+ * 海洋数据服务 — DTO 层缓存策略
  */
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,8 @@ public class OceanDataService {
     /**
      * 分页查询
      */
-    public Page<OceanDataVO> pageQuery(int pageNum, int pageSize, OceanDataQuery query) {
+    @Cacheable(value = "ocean:page", key = "#pageNum + ':' + #pageSize + ':' + (#query != null ? #query.hashCode() : 'all')")
+    public PageVO<OceanDataVO> pageQuery(int pageNum, int pageSize, OceanDataQuery query) {
         LambdaQueryWrapper<OceanData> wrapper = buildQueryWrapper(query);
         wrapper.orderByDesc(OceanData::getDataTime);
 
@@ -41,12 +43,13 @@ public class OceanDataService {
                 .map(this::toVO)
                 .collect(Collectors.toList()));
 
-        return voPage;
+        return PageVO.from(voPage);
     }
 
     /**
-     * 列表查询（不分页）
+     * 列表查询（不分页，地图标注用，LIMIT 500）
      */
+    @Cacheable(value = "ocean:list", key = "#query != null ? #query.hashCode() : 'all'")
     public List<OceanDataVO> list(OceanDataQuery query) {
         LambdaQueryWrapper<OceanData> wrapper = buildQueryWrapper(query);
         wrapper.orderByDesc(OceanData::getDataTime);
@@ -60,9 +63,8 @@ public class OceanDataService {
     /**
      * 获取各海域最新数据（大屏概览）
      */
-    
+    @Cacheable(value = "ocean:latest", key = "'latest'")
     public Map<String, OceanDataVO> getLatestByArea() {
-        // 获取所有海域列表
         List<String> areas = oceanDataMapper.selectList(
                 new LambdaQueryWrapper<OceanData>()
                         .select(OceanData::getSeaArea)
@@ -70,7 +72,6 @@ public class OceanDataService {
                         .last("LIMIT 10")
         ).stream().map(OceanData::getSeaArea).collect(Collectors.toList());
 
-        // 每个海域取最新一条
         return areas.stream().collect(Collectors.toMap(
                 area -> area,
                 area -> {
@@ -86,8 +87,9 @@ public class OceanDataService {
     }
 
     /**
-     * 获取某段时间的温度趋势
+     * 获取温度趋势（折线图用，LIMIT 200）
      */
+    @Cacheable(value = "ocean:trend", key = "#seaArea + ':' + #start + ':' + #end")
     public List<OceanDataVO> getTrend(String seaArea, String start, String end) {
         LambdaQueryWrapper<OceanData> wrapper = new LambdaQueryWrapper<>();
         if (StringUtils.hasText(seaArea)) {

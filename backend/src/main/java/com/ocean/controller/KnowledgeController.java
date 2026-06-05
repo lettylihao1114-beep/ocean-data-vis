@@ -1,6 +1,6 @@
 package com.ocean.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ocean.dto.PageVO;
 import com.ocean.dto.R;
 import com.ocean.entity.Knowledge;
 import com.ocean.service.KnowledgeService;
@@ -23,7 +23,7 @@ public class KnowledgeController {
 
     @Operation(summary = "科普文章列表（公开）")
     @GetMapping("/public")
-    public R<Page<Knowledge>> publicList(
+    public R<PageVO<Knowledge>> publicList(
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String category) {
@@ -39,7 +39,7 @@ public class KnowledgeController {
     @Operation(summary = "管理列表（管理员）")
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public R<Page<Knowledge>> adminList(
+    public R<PageVO<Knowledge>> adminList(
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String category) {

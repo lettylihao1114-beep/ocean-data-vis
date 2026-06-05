@@ -1,8 +1,8 @@
 package com.ocean.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ocean.dto.OceanDataQuery;
 import com.ocean.dto.OceanDataVO;
+import com.ocean.dto.PageVO;
 import com.ocean.dto.R;
 import com.ocean.service.OceanDataService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +26,7 @@ public class OceanDataController {
 
     @Operation(summary = "分页查询")
     @PostMapping("/page")
-    public R<Page<OceanDataVO>> page(
+    public R<PageVO<OceanDataVO>> page(
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestBody(required = false) OceanDataQuery query) {

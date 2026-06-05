@@ -1,6 +1,6 @@
 package com.ocean.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ocean.dto.PageVO;
 import com.ocean.dto.R;
 import com.ocean.entity.Alert;
 import com.ocean.service.AlertService;
@@ -29,9 +29,10 @@ public class AlertController {
         return R.ok(alertService.getActiveAlerts());
     }
 
-    @Operation(summary = "分页查询预警")
+    @Operation(summary = "分页查询预警（管理员）")
     @GetMapping
-    public R<Page<Alert>> page(
+    @PreAuthorize("hasRole('ADMIN')")
+    public R<PageVO<Alert>> page(
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String type,
@@ -39,8 +40,9 @@ public class AlertController {
         return R.ok(alertService.page(pageNum, pageSize, type, level));
     }
 
-    @Operation(summary = "获取预警详情")
+    @Operation(summary = "获取预警详情（管理员）")
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public R<Alert> getById(@PathVariable Long id) {
         return R.ok(alertService.getById(id));
     }
