@@ -222,19 +222,19 @@ onMounted(() => { fetchUsers(); fetchArticles(); fetchPoints() })
 <style scoped>
 .page { padding: 4px 0; }
 .page-header { margin-bottom: 20px; }
-.page-header h2 { margin: 0; font-size: 20px; color: #0a3d62; display: flex; align-items: center; gap: 10px; font-weight: 700; }
-.page-header p { margin: 4px 0 0; color: #94a3b8; font-size: 13px; }
+.page-header h2 { margin: 0; font-size: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.page-header p { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; }
 
 /* Tab 栏 */
-.tab-bar { display: flex; gap: 4px; margin-bottom: 16px; background: #fff; border-radius: 10px; padding: 4px; box-shadow: 0 1px 6px rgba(0,0,0,.04); border: 1px solid #eaf0f6; }
-.tab-btn { padding: 10px 24px; border: none; background: transparent; border-radius: 8px; font-size: 14px; color: #64748b; cursor: pointer; transition: .15s; font-weight: 500; }
-.tab-btn:hover { background: #f1f5f9; color: #0a3d62; }
-.tab-btn.active { background: #0ea5e9; color: #fff; font-weight: 600; }
+.tab-bar { display: flex; gap: 4px; margin-bottom: 16px; background: var(--bg-card); backdrop-filter: blur(8px); border-radius: 10px; padding: 4px; box-shadow: var(--shadow-card); border: 1px solid var(--border-default); }
+.tab-btn { padding: 10px 24px; border: none; background: transparent; border-radius: 8px; font-size: 14px; color: var(--text-secondary); cursor: pointer; transition: .15s; font-weight: 500; }
+.tab-btn:hover { background: rgba(0, 229, 255, 0.08); color: var(--accent-cyan); }
+.tab-btn.active { background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); font-weight: 600; }
 
 /* 面板 */
-.panel { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,.04); border: 1px solid #eaf0f6; }
-.panel-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f1f5f9; }
-.panel-count { font-size: 13px; color: #94a3b8; }
-.panel-table :deep(.el-table th) { background: #f8fafc; color: #475569; font-weight: 600; }
-.panel-footer { display: flex; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid #f1f5f9; }
+.panel { background: var(--bg-card); backdrop-filter: blur(8px); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid var(--border-default); }
+.panel-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); }
+.panel-count { font-size: 13px; color: var(--text-muted); }
+.panel-table :deep(.el-table th) { background: rgba(0, 229, 255, 0.05); color: var(--text-secondary); font-weight: 600; }
+.panel-footer { display: flex; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid var(--border-subtle); }
 </style>

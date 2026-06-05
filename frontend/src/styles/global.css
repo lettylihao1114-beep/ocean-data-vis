@@ -1,0 +1,108 @@
+/* ============================================
+   南海海洋数据平台 — 淡蓝清爽风全局样式
+   ============================================ */
+
+/* ========== CSS 变量 ========== */
+:root {
+  /* 背景层 — 淡蓝系 */
+  --bg-primary: #f0f5fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e2e8f0;
+  --bg-card: #ffffff;
+
+  /* 主题色 — 海洋蓝 */
+  --accent-cyan: #0ea5e9;
+  --accent-blue: #3b82f6;
+  --accent-teal: #06b6d4;
+  --accent-green: #10b981;
+  --accent-orange: #f59e0b;
+  --accent-red: #ef4444;
+  --glow-cyan: 0 0 8px rgba(14, 165, 233, 0.25);
+  --glow-blue: 0 0 8px rgba(59, 130, 246, 0.25);
+
+  /* 文本 */
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-accent: #0ea5e9;
+
+  /* 边框 */
+  --border-subtle: #f1f5f9;
+  --border-default: #e2e8f0;
+  --border-hover: #0ea5e9;
+
+  /* 阴影 */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* 字体 */
+  --font-display: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-body: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ========== 全局重置 ========== */
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+#app { background: var(--bg-primary); min-height: 100vh; }
+
+/* ========== Element Plus 微调 ========== */
+
+/* 表格 */
+.el-table th.el-table__cell {
+  background: #f8fafc !important;
+  color: var(--text-secondary) !important;
+  font-weight: 600;
+}
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: #fafcfd !important;
+}
+
+/* 分页 */
+.el-pager li.is-active {
+  background: var(--accent-cyan) !important;
+  color: #fff !important;
+}
+
+/* 按钮 */
+.el-button--primary {
+  font-weight: 600;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ========== 通用卡片 ========== */
+.glass-card {
+  background: #fff;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.glass-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ========== 动效 ========== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes glowPulse {
+  0%, 100% { border-color: rgba(14, 165, 233, 0.15); }
+  50% { border-color: rgba(14, 165, 233, 0.5); }
+}
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
