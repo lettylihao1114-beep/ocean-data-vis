@@ -69,11 +69,14 @@ public class KnowledgeVectorStore {
                 }
 
                 for (Knowledge article : articles) {
-                    String text = article.getTitle() + "：" + article.getSummary();
+                    // 向量化标题+摘要+正文（截断到 500 字，适配嵌入模型 token 限制）
+                    String content = article.getContent() != null ? article.getContent() : "";
+                    String text = article.getTitle() + "：" + article.getSummary()
+                            + " " + truncateText(content, 500);
                     double[] vec = embeddingService.embed(text);
                     if (vec != null) {
                         docs.add(new DocEntry(article.getId(), article.getTitle(),
-                                article.getSummary(), article.getCategory(), vec));
+                                article.getSummary(), article.getContent(), article.getCategory(), vec));
                         vectors.add(vec);
                         log.info("RAG embedded: {}", article.getTitle());
                     }
@@ -93,8 +96,12 @@ public class KnowledgeVectorStore {
         }, "rag-init").start();
     }
 
+    /** 相似度阈值：低于此值认为不相关，不注入 RAG 上下文 */
+    private static final double SIMILARITY_THRESHOLD = 0.35;
+
     /**
-     * 检索与问题最相关的 Top-K 文章上下文，返回拼接好的文本
+     * 检索与问题最相关的 Top-K 文章上下文，返回拼接好的文本。
+     * 相似度低于阈值的结果会被过滤，避免注入不相关内容。
      */
     public String retrieveContext(String question, int topK) {
         if (!ready || vectors.isEmpty()) return "";
@@ -105,12 +112,30 @@ public class KnowledgeVectorStore {
         int[] indices = embeddingService.topK(queryVec, vectors, Math.min(topK, vectors.size()));
 
         StringBuilder sb = new StringBuilder();
+        int added = 0;
         for (int idx : indices) {
+            double similarity = embeddingService.cosineSimilarity(queryVec, vectors.get(idx));
+            if (similarity < SIMILARITY_THRESHOLD) {
+                log.debug("RAG skip [{}] similarity={} < threshold", docs.get(idx).title,
+                        String.format("%.3f", similarity));
+                continue;
+            }
             DocEntry doc = docs.get(idx);
             sb.append("---\n");
             sb.append("【").append(doc.title).append("】\n");
-            sb.append(doc.summary).append("\n");
+            if (doc.content != null && !doc.content.isEmpty()) {
+                sb.append(stripMarkdown(doc.content)).append("\n");
+            } else {
+                sb.append(doc.summary).append("\n");
+            }
+            added++;
         }
+
+        if (added == 0) {
+            log.info("RAG no relevant docs found (best similarity below threshold), returning empty");
+            return "";
+        }
+
         return sb.toString();
     }
 
@@ -131,16 +156,43 @@ public class KnowledgeVectorStore {
         public Long id;
         public String title;
         public String summary;
+        public String content;
         public String category;
         public double[] embedding;
 
         public DocEntry() {}
-        public DocEntry(Long id, String title, String summary, String category, double[] embedding) {
+        public DocEntry(Long id, String title, String summary, String content,
+                        String category, double[] embedding) {
             this.id = id;
             this.title = title;
             this.summary = summary;
+            this.content = content;
             this.category = category;
             this.embedding = embedding;
         }
+    }
+
+    /** 截断文本到指定字符数（保持语义完整） */
+    private String truncateText(String text, int maxChars) {
+        if (text == null || text.isEmpty()) return "";
+        // 去掉 Markdown 标记再截断
+        String plain = stripMarkdown(text);
+        if (plain.length() <= maxChars) return plain;
+        return plain.substring(0, maxChars);
+    }
+
+    /** 去掉 Markdown 标记符号，保留纯文本 */
+    private String stripMarkdown(String text) {
+        if (text == null) return "";
+        return text
+                .replaceAll("#+\\s*", "")       // 标题 #
+                .replaceAll("\\*\\*(.+?)\\*\\*", "$1")  // 加粗
+                .replaceAll("\\*(.+?)\\*", "$1")        // 斜体
+                .replaceAll("`(.+?)`", "$1")            // 行内代码
+                .replaceAll(">\\s*", "")                // 引用
+                .replaceAll("[-*+]\\s+", "")            // 无序列表
+                .replaceAll("\\d+\\.\\s+", "")          // 有序列表
+                .replaceAll("\\n{2,}", "\n")            // 多余空行
+                .trim();
     }
 }
