@@ -61,37 +61,58 @@ const goTo = (path: string) => router.push(path)
 <template>
   <div class="home">
 
-    <!-- Hero 区 -->
-    <section class="hero">
-      <div class="hero-bg"></div>
-      <div class="hero-body">
-        <h1 class="hero-title">南海海洋环境数据可视化</h1>
-        <p class="hero-desc">
-          基于国家地球系统科学数据中心南海再分析数据集（1986 至今），
-          提供水温、盐度、洋流、潮汐、污染监测等海洋环境数据的查询、可视化、预警与 AI 智能分析服务。
-        </p>
-        <div class="hero-actions">
-          <button class="hero-btn primary" @click="goTo('/dashboard')"><SvgIcon name="chart" :size="16"/> 进入数据大屏</button>
-          <button class="hero-btn" @click="goTo('/data-query')"><SvgIcon name="search" :size="16"/> 数据查询</button>
-          <button class="hero-btn" @click="goTo('/ai-chat')"><SvgIcon name="bot" :size="16"/> AI 助手</button>
+    <!-- 快捷入口 + 统计 -->
+    <section class="section section-top">
+      <div class="top-grid">
+        <div class="top-card primary" @click="goTo('/dashboard')">
+          <SvgIcon name="chart" :size="28" color="#fff"/>
+          <div>
+            <h3>数据大屏</h3>
+            <p>ECharts 多图表可视化</p>
+          </div>
+          <span class="top-arrow">→</span>
         </div>
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <span class="hero-stat-num">{{ totalPoints }}</span>
-            <span class="hero-stat-label">监测点位</span>
+        <div class="top-card" @click="goTo('/data-query')">
+          <SvgIcon name="search" :size="28" color="#0ea5e9"/>
+          <div>
+            <h3>数据查询</h3>
+            <p>多维筛选海洋数据</p>
           </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">{{ Object.keys(overviewData).length }}</span>
-            <span class="hero-stat-label">海域覆盖</span>
+          <span class="top-arrow">→</span>
+        </div>
+        <div class="top-card" @click="goTo('/ai-chat')">
+          <SvgIcon name="bot" :size="28" color="#06b6d4"/>
+          <div>
+            <h3>AI 助手</h3>
+            <p>RAG 检索增强问答</p>
           </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">{{ activeCount }}</span>
-            <span class="hero-stat-label">运行中</span>
+          <span class="top-arrow">→</span>
+        </div>
+        <div class="top-card" @click="goTo('/monitor-map')">
+          <SvgIcon name="map" :size="28" color="#10b981"/>
+          <div>
+            <h3>监测地图</h3>
+            <p>Leaflet 点位标注</p>
           </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">{{ knowledgeList.length }}</span>
-            <span class="hero-stat-label">科普文章</span>
-          </div>
+          <span class="top-arrow">→</span>
+        </div>
+      </div>
+      <div class="top-stats">
+        <div class="top-stat">
+          <span class="top-stat-num">{{ totalPoints }}</span>
+          <span class="top-stat-label">监测点位</span>
+        </div>
+        <div class="top-stat">
+          <span class="top-stat-num">{{ Object.keys(overviewData).length }}</span>
+          <span class="top-stat-label">海域覆盖</span>
+        </div>
+        <div class="top-stat">
+          <span class="top-stat-num">{{ activeCount }}</span>
+          <span class="top-stat-label">运行中</span>
+        </div>
+        <div class="top-stat">
+          <span class="top-stat-num">{{ knowledgeList.length }}</span>
+          <span class="top-stat-label">科普文章</span>
         </div>
       </div>
     </section>
@@ -197,46 +218,38 @@ const goTo = (path: string) => router.push(path)
 </template>
 
 <style scoped>
-/* ========== Hero ========== */
-.hero {
-  position: relative; overflow: hidden;
-  background: linear-gradient(160deg, #04182e 0%, #06203a 25%, #0a3d62 55%, #0d5e8a 80%, #0f6a9e 100%);
-  padding: 60px 36px 56px;
-  text-align: center;
-}
-.hero-bg {
-  position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse 800px 300px at 20% 50%, rgba(6,182,212,.12), transparent),
-    radial-gradient(ellipse 600px 300px at 80% 30%, rgba(14,165,233,.1), transparent);
-}
-.hero-body { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
-.hero-title { color: #fff; font-size: 32px; font-weight: 800; margin: 0; letter-spacing: 1px; }
-.hero-desc {
-  color: rgba(255,255,255,.65); font-size: 15px; line-height: 1.8;
-  margin: 16px 0 28px; max-width: 640px; margin-left: auto; margin-right: auto;
-}
-.hero-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
-.hero-btn {
-  padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
-  border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08);
-  color: rgba(255,255,255,.85); cursor: pointer; transition: .2s;
-  display: inline-flex; align-items: center; gap: 6px;
-}
-.hero-btn :deep(svg) { vertical-align: middle; }
-.hero-btn:hover { background: rgba(255,255,255,.16); color: #fff; }
-.hero-btn.primary { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
-.hero-btn.primary:hover { background: #06b6d4; }
-.hero-stats { display: flex; justify-content: center; gap: 40px; }
-.hero-stat { text-align: center; }
-.hero-stat-num { display: block; color: #fff; font-size: 32px; font-weight: 800; }
-.hero-stat-label { color: rgba(255,255,255,.5); font-size: 13px; margin-top: 4px; }
-
 /* ========== Section 通用 ========== */
+.section-top { padding-top: 32px; }
 .section { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
 .section-header { text-align: center; margin-bottom: 28px; }
 .section-header h2 { font-size: 22px; color: #0a3d62; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; }
 .section-header p { color: #94a3b8; font-size: 13px; margin: 6px 0 0; }
+
+/* ========== 顶部快捷入口 ========== */
+.top-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.top-card {
+  background: #fff; border-radius: 12px; padding: 20px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.04); border: 1px solid #eaf0f6;
+  cursor: pointer; transition: transform .15s, box-shadow .15s;
+}
+.top-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6,32,58,.08); }
+.top-card h3 { margin: 0; font-size: 15px; color: #1e293b; font-weight: 600; }
+.top-card p { margin: 3px 0 0; font-size: 12px; color: #94a3b8; }
+.top-arrow { color: #cbd5e1; font-size: 18px; flex-shrink: 0; }
+.top-card.primary { background: linear-gradient(135deg, #0ea5e9, #06b6d4); border: none; }
+.top-card.primary h3, .top-card.primary p { color: #fff; }
+.top-card.primary .top-arrow { color: rgba(255,255,255,.7); }
+
+.top-stats { display: flex; justify-content: center; gap: 48px; margin-top: 28px; }
+.top-stat { text-align: center; }
+.top-stat-num { display: block; color: #0a3d62; font-size: 28px; font-weight: 800; }
+.top-stat-label { color: #94a3b8; font-size: 13px; margin-top: 2px; }
+
+@media (max-width: 768px) {
+  .top-grid { grid-template-columns: repeat(2, 1fr); }
+  .top-stats { gap: 24px; flex-wrap: wrap; }
+}
 
 /* ========== 数据分类卡片 ========== */
 .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }

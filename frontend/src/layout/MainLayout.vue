@@ -47,25 +47,26 @@ const handleLogout = () => {
         <div class="banner-wave"></div>
       </div>
       <div class="banner-content">
-        <div class="banner-left">
+        <div class="banner-topbar">
+          <span class="banner-topbar-welcome">
+            <SvgIcon name="user" :size="14"/> {{ authStore.username }}
+            <span v-if="authStore.role === 'ADMIN'" class="banner-admin-badge">管理员</span>
+          </span>
+          <span class="banner-topbar-date">{{ new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' }) }}</span>
+          <button class="banner-logout" @click="handleLogout">退出</button>
+        </div>
+        <div class="banner-hero">
           <div class="banner-logo">
-            <svg viewBox="0 0 48 48" fill="none" width="48" height="48">
-              <circle cx="24" cy="24" r="22" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+            <svg viewBox="0 0 48 48" fill="none" width="56" height="56">
+              <circle cx="24" cy="24" r="22" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
               <path d="M14 32 Q24 10 34 32" stroke="white" stroke-width="2" fill="none" opacity=".9"/>
               <path d="M10 34 Q24 16 38 34" stroke="white" stroke-width="1" fill="none" opacity=".5"/>
             </svg>
           </div>
           <div class="banner-title-group">
             <h1 class="banner-title">南海海洋数据可视化平台</h1>
-            <p class="banner-sub">South China Sea Environmental Data Visualization</p>
+            <p class="banner-sub">South China Sea Environmental Data Visualization · 国家地球系统科学数据中心</p>
           </div>
-        </div>
-        <div class="banner-right">
-          <span class="banner-user">
-            <SvgIcon name="user" :size="16"/> {{ authStore.username }}
-            <span v-if="authStore.role === 'ADMIN'" class="banner-admin-badge">管理员</span>
-          </span>
-          <button class="banner-logout" @click="handleLogout">退出</button>
         </div>
       </div>
     </header>
@@ -142,40 +143,53 @@ const handleLogout = () => {
   position: relative; overflow: hidden;
   background: linear-gradient(135deg, #04182e 0%, #06203a 30%, #0a3d62 60%, #0d5e8a 100%);
   background-size: cover; background-position: center; background-repeat: no-repeat;
-  flex-shrink: 0;
+  flex-shrink: 0; min-height: 260px;
 }
 .banner-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(4,24,46,.75) 0%, rgba(6,32,58,.6) 50%, rgba(10,61,98,.45) 100%);
+  background: linear-gradient(180deg, rgba(4,24,46,.65) 0%, rgba(6,32,58,.45) 60%, rgba(10,61,98,.35) 100%);
   pointer-events: none; z-index: 0;
 }
 .banner-bg { position: absolute; inset: 0; pointer-events: none; }
 .banner-wave {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 40px;
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 40' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 Q75 5 150 20 Q225 35 300 20 Q375 5 450 20 Q525 35 600 20 Q675 5 750 20 Q825 35 900 20 Q975 5 1050 20 Q1125 35 1200 20 L1200 40 L0 40 Z' fill='rgba(255,255,255,.03)'/%3E%3Cpath d='M0 28 Q100 15 200 28 Q300 41 400 28 Q500 15 600 28 Q700 41 800 28 Q900 15 1000 28 Q1100 41 1200 28 L1200 40 L0 40 Z' fill='rgba(255,255,255,.02)'/%3E%3C/svg%3E") repeat-x;
-  background-size: 600px 40px;
+  position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 60' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q75 10 150 30 Q225 50 300 30 Q375 10 450 30 Q525 50 600 30 Q675 10 750 30 Q825 50 900 30 Q975 10 1050 30 Q1125 50 1200 30 L1200 60 L0 60 Z' fill='rgba(255,255,255,.04)'/%3E%3Cpath d='M0 42 Q100 25 200 42 Q300 59 400 42 Q500 25 600 42 Q700 59 800 42 Q900 25 1000 42 Q1100 59 1200 42 L1200 60 L0 60 Z' fill='rgba(255,255,255,.02)'/%3E%3C/svg%3E") repeat-x;
+  background-size: 600px 60px;
 }
 .banner-content {
   position: relative; z-index: 1;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 36px; flex-wrap: wrap; gap: 14px;
+  display: flex; flex-direction: column;
+  height: 100%; min-height: 260px;
+  padding: 0 48px;
 }
-.banner-left { display: flex; align-items: center; gap: 16px; }
-.banner-logo { flex-shrink: 0; }
-.banner-title-group { display: flex; flex-direction: column; }
-.banner-title { color: #fff; font-size: 20px; font-weight: 700; margin: 0; letter-spacing: 1px; }
-.banner-sub { color: rgba(255,255,255,.5); font-size: 11px; margin: 4px 0 0; letter-spacing: 1px; text-transform: uppercase; }
-.banner-right { display: flex; align-items: center; gap: 14px; }
-.banner-user { color: rgba(255,255,255,.85); font-size: 14px; display: flex; align-items: center; gap: 8px; }
+/* 顶部栏：用户信息 + 日期 + 退出 */
+.banner-topbar {
+  display: flex; align-items: center; justify-content: flex-end; gap: 16px;
+  padding: 16px 0;
+}
+.banner-topbar-welcome {
+  color: rgba(255,255,255,.75); font-size: 13px;
+  display: flex; align-items: center; gap: 6px;
+}
+.banner-topbar-date { color: rgba(255,255,255,.4); font-size: 12px; }
 .banner-admin-badge {
   background: rgba(239,68,68,.25); color: #fca5a5; font-size: 10px;
   padding: 2px 10px; border-radius: 10px; border: 1px solid rgba(239,68,68,.4);
 }
 .banner-logout {
-  background: rgba(255,255,255,.1); color: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.15);
-  padding: 6px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; transition: .2s;
+  background: rgba(255,255,255,.08); color: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.15);
+  padding: 5px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: .2s;
 }
 .banner-logout:hover { background: rgba(255,255,255,.18); color: #fff; }
+/* Hero 区：Logo + 标题 */
+.banner-hero {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: 1; padding-bottom: 30px; gap: 16px; text-align: center;
+}
+.banner-logo { flex-shrink: 0; }
+.banner-title-group { display: flex; flex-direction: column; align-items: center; }
+.banner-title { color: #fff; font-size: 32px; font-weight: 800; margin: 0; letter-spacing: 2px; text-shadow: 0 2px 12px rgba(0,0,0,.3); }
+.banner-sub { color: rgba(255,255,255,.55); font-size: 13px; margin: 8px 0 0; letter-spacing: 1px; }
 
 /* ========== 横向导航栏 ========== */
 .app-navbar {
@@ -226,7 +240,9 @@ const handleLogout = () => {
 @media (max-width: 768px) {
   .footer-inner { grid-template-columns: 1fr; }
   .navbar-links { overflow-x: auto; }
-  .banner-content { flex-direction: column; text-align: center; }
-  .banner-left { flex-direction: column; }
+  .banner-title { font-size: 22px; }
+  .banner-sub { font-size: 11px; }
+  .banner-content { padding: 0 20px; }
+  .banner-topbar { justify-content: center; flex-wrap: wrap; }
 }
 </style>
