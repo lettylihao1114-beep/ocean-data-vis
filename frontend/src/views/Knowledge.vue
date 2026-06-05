@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { knowledgeAPI } from '@/api'
 import type { Knowledge } from '@/types'
+import SvgIcon from '@/components/SvgIcon.vue'
 
 const list = ref<Knowledge[]>([])
 const total = ref(0)
@@ -11,14 +12,20 @@ const detailVisible = ref(false)
 const current = ref<Knowledge | null>(null)
 const rawHtml = ref('')
 
-const categories = ['', 'OCEAN_CURRENT', 'TIDE', 'ECOLOGY', 'POLLUTION', 'CLIMATE', 'GENERAL']
+const categories = ['', 'OCEAN_CURRENT', 'TIDE', 'ECOLOGY', 'POLLUTION', 'GEOGRAPHY', 'WATER_QUALITY', 'GENERAL']
 const categoryNames: Record<string, string> = {
-  '': '全部', OCEAN_CURRENT: '洋流', TIDE: '潮汐', ECOLOGY: '生态', POLLUTION: '污染', CLIMATE: '气候', GENERAL: '综合',
+  '': '全部', OCEAN_CURRENT: '洋流', TIDE: '潮汐', ECOLOGY: '生态', POLLUTION: '污染', GEOGRAPHY: '地理', WATER_QUALITY: '水温盐度', GENERAL: '综合',
+}
+const categoryIcons: Record<string, string> = {
+  OCEAN_CURRENT: 'cycle', TIDE: 'moon', ECOLOGY: 'fish', POLLUTION: 'shield', GEOGRAPHY: 'wave', WATER_QUALITY: 'thermometer', GENERAL: 'book',
+}
+const categoryColors: Record<string, string> = {
+  OCEAN_CURRENT: '#06b6d4', TIDE: '#8b5cf6', ECOLOGY: '#10b981', POLLUTION: '#f59e0b', GEOGRAPHY: '#0ea5e9', WATER_QUALITY: '#ef4444', GENERAL: '#64748b',
 }
 
 const fetchData = async () => {
   try {
-    const res: any = await knowledgeAPI.publicList({ pageNum: pageNum.value, pageSize: 10, category: category.value })
+    const res: any = await knowledgeAPI.publicList({ pageNum: pageNum.value, pageSize: 9, category: category.value })
     list.value = res.data?.records || []
     total.value = res.data?.total || 0
   } catch {}
@@ -29,80 +36,134 @@ const viewDetail = async (id: number) => {
     const res: any = await knowledgeAPI.detail(id)
     current.value = res.data
     if (current.value?.content) {
-      // simple markdown→html
       let html = current.value.content
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-        .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-        .replace(/\*(.+?)\*/g, '<i>$1</i>')
-        .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-        .replace(/^- (.+)$/gm, '<li>$1</li>')
-        .replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br/>')
-      html = '<p>' + html + '</p>'
-      html = html.replace(/<p><h([123])>/g, '<h$1>').replace(/<\/h([123])><\/p>/g, '</h$1>')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>')
+        .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+        .replace(/^- (.+)$/gm,'<li>$1</li>').replace(/^(\d+)\. (.+)$/gm,'<li>$2</li>')
+        .replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br/>')
+      html = '<p>'+html+'</p>'
+      html = html.replace(/<p><h([123])>/g,'<h$1>').replace(/<\/h([123])><\/p>/g,'</h$1>')
       rawHtml.value = html
     }
     detailVisible.value = true
-  } catch (e) {
-    console.error('Failed to load article:', e)
-  }
+  } catch {}
 }
 
 onMounted(fetchData)
 </script>
 
 <template>
-  <el-card>
-    <el-form :inline="true" style="margin-bottom: 16px">
-      <el-form-item label="分类">
-        <el-select v-model="category" @change="fetchData" placeholder="全部分类">
-          <el-option v-for="c in categories" :key="c" :label="categoryNames[c]" :value="c" />
-        </el-select>
-      </el-form-item>
-    </el-form>
+  <div class="page">
+    <div class="page-header">
+      <h2><SvgIcon name="book" :size="22" color="#0ea5e9"/> 科普知识</h2>
+      <p>了解南海海洋科学，共 {{ total }} 篇文章</p>
+    </div>
 
-    <el-row :gutter="16">
-      <el-col :span="8" v-for="item in list" :key="item.id">
-        <el-card shadow="hover" @click="viewDetail(item.id!)" style="margin-bottom: 16px; cursor: pointer">
-          <template #header>
-            <el-tag size="small" style="margin-right: 8px">{{ categoryNames[item.category] }}</el-tag>
-            <b>{{ item.title }}</b>
-          </template>
-          <div class="summary">{{ item.summary || item.content?.substring(0, 100) + '...' }}</div>
-          <div style="color: #bbb; font-size: 12px; margin-top: 8px">
-            👁 {{ item.viewCount }} 次 · {{ item.createTime }}
+    <!-- 分类筛选 -->
+    <div class="category-filter">
+      <button
+        v-for="c in categories" :key="c"
+        class="cat-btn" :class="{ active: category === c }"
+        @click="category = c; pageNum = 1; fetchData()"
+      >
+        <SvgIcon v-if="c && categoryIcons[c]" :name="categoryIcons[c]" :size="16" :color="category === c ? '#fff' : categoryColors[c]"/>
+        {{ categoryNames[c] }}
+      </button>
+    </div>
+
+    <!-- 文章卡片 -->
+    <div class="article-grid">
+      <div class="article-card" v-for="item in list" :key="item.id" @click="viewDetail(item.id!)">
+        <div class="article-cover" :style="{ background: 'linear-gradient(135deg,'+(categoryColors[item.category]||'#0ea5e9')+'18, '+ (categoryColors[item.category]||'#0ea5e9')+'08)' }">
+          <SvgIcon :name="categoryIcons[item.category]||'book'" :size="36" :color="categoryColors[item.category]||'#0ea5e9'"/>
+        </div>
+        <div class="article-body">
+          <div class="article-tags">
+            <span class="article-cat" :style="{color:categoryColors[item.category],background:(categoryColors[item.category]||'#0ea5e9')+'14'}">
+              {{ categoryNames[item.category] || item.category }}
+            </span>
           </div>
-        </el-card>
-      </el-col>
-    </el-row>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.summary || item.content?.substring(0, 80) + '...' }}</p>
+          <div class="article-meta">
+            <span>👁 {{ item.viewCount }}</span>
+            <span>{{ item.createTime?.substring(0, 10) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <el-empty v-if="!total" description="暂无科普文章" />
+    <el-empty v-if="!total && !list.length" description="暂无科普文章" />
 
-    <el-pagination v-model:current-page="pageNum" :total="total" layout="total, prev, pager, next" @current-change="fetchData" style="justify-content: center; margin-top: 16px" />
+    <div class="pagination-wrap" v-if="total > 9">
+      <el-pagination v-model:current-page="pageNum" :total="total" :page-size="9" layout="prev, pager, next" @current-change="fetchData" />
+    </div>
 
-    <el-dialog v-model="detailVisible" :title="current?.title" width="800px" top="5vh">
+    <!-- 文章详情弹窗 -->
+    <el-dialog v-model="detailVisible" :title="current?.title" width="800px" top="5vh" class="article-dialog">
       <template v-if="current">
-        <div style="color: #999; font-size: 13px; margin-bottom: 16px; border-bottom: 1px solid #eee; padding-bottom: 12px">
-          📂 {{ categoryNames[current.category] }} · 👁 {{ current.viewCount }} 次阅读 · {{ current.createTime }}
+        <div class="detail-meta">
+          <span class="detail-cat" :style="{color:categoryColors[current.category],background:(categoryColors[current.category]||'#0ea5e9')+'14'}">
+            <SvgIcon :name="categoryIcons[current.category]||'book'" :size="14" :color="categoryColors[current.category]"/>
+            {{ categoryNames[current.category] || current.category }}
+          </span>
+          <span>👁 {{ current.viewCount }} 次阅读</span>
+          <span>{{ current.createTime }}</span>
         </div>
         <div v-if="rawHtml" class="markdown-body" v-html="rawHtml"></div>
         <el-empty v-else description="文章暂无内容" />
       </template>
     </el-dialog>
-  </el-card>
+  </div>
 </template>
 
 <style scoped>
-.summary { color: #666; font-size: 13px; line-height: 1.6; }
-.markdown-body { padding: 16px; line-height: 1.9; font-size: 15px; color: #333; }
-.markdown-body :deep(h1) { font-size: 24px; border-bottom: 2px solid #0984e3; padding-bottom: 8px; }
+.page { padding: 4px 0; }
+.page-header { margin-bottom: 20px; }
+.page-header h2 { margin: 0; font-size: 20px; color: #0a3d62; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.page-header p { margin: 4px 0 0; color: #94a3b8; font-size: 13px; }
+
+/* 分类筛选 */
+.category-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.cat-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border-radius: 20px; border: 1px solid #e2e8f0;
+  background: #fff; color: #475569; font-size: 13px; cursor: pointer;
+  transition: all .15s; font-weight: 500;
+}
+.cat-btn:hover { border-color: #0ea5e9; color: #0ea5e9; }
+.cat-btn.active { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
+
+/* 文章网格 */
+.article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.article-card {
+  background: #fff; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,.04); border: 1px solid #eaf0f6;
+  cursor: pointer; transition: transform .15s, box-shadow .15s; display: flex;
+}
+.article-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6,32,58,.08); }
+.article-cover {
+  width: 100px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.article-body { padding: 16px 18px; flex: 1; min-width: 0; }
+.article-tags { margin-bottom: 6px; }
+.article-cat { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+.article-body h3 { margin: 0 0 6px; font-size: 15px; color: #1e293b; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.article-body p { margin: 0 0 10px; font-size: 12px; color: #94a3b8; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.article-meta { display: flex; gap: 14px; font-size: 11px; color: #a0aec0; }
+
+.pagination-wrap { display: flex; justify-content: center; margin-top: 24px; }
+
+/* 详情弹窗 */
+.detail-meta { display: flex; align-items: center; gap: 14px; padding-bottom: 14px; margin-bottom: 16px; border-bottom: 1px solid #eaf0f6; font-size: 13px; color: #94a3b8; }
+.detail-cat { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 2px 10px; border-radius: 4px; font-weight: 600; }
+.markdown-body { padding: 0 4px; line-height: 1.9; font-size: 15px; color: #333; }
+.markdown-body :deep(h1) { font-size: 24px; border-bottom: 2px solid #0ea5e9; padding-bottom: 8px; color: #0a3d62; }
 .markdown-body :deep(h2) { font-size: 20px; color: #0a3d62; margin-top: 24px; }
 .markdown-body :deep(h3) { font-size: 17px; color: #333; }
-.markdown-body :deep(blockquote) { border-left: 4px solid #0984e3; padding: 8px 16px; color: #555; background: #f5f9fc; margin: 12px 0; }
+.markdown-body :deep(blockquote) { border-left: 4px solid #0ea5e9; padding: 8px 16px; color: #555; background: #f5f9fc; margin: 12px 0; }
 .markdown-body :deep(li) { margin: 4px 0 4px 20px; }
 .markdown-body :deep(b) { color: #0a3d62; }
 </style>
