@@ -24,7 +24,7 @@ const handleSubmit = async () => {
     } else {
       await authStore.login({ username: form.value.username, password: form.value.password })
       ElMessage.success('登录成功')
-      router.push('/dashboard')
+      router.push('/home')
     }
   } catch (e: any) {
     const msg = e?.response?.data?.message || e?.message || '操作失败，请重试'

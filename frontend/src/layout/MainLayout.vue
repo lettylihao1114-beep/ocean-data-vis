@@ -2,12 +2,16 @@
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { ElMessageBox } from 'element-plus'
+import { computed } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-const menuItems = [
+const isHome = computed(() => route.path === '/' || route.path === '/home')
+
+const navItems = [
+  { path: '/home', title: '首页', icon: 'HomeFilled' },
   { path: '/dashboard', title: '数据大屏', icon: 'DataAnalysis' },
   { path: '/data-query', title: '数据查询', icon: 'Search' },
   { path: '/monitor-map', title: '监测地图', icon: 'MapLocation' },
@@ -16,7 +20,7 @@ const menuItems = [
   { path: '/export', title: '数据导出', icon: 'Download' },
 ]
 
-const adminMenus = [
+const adminNavItems = [
   { path: '/alerts', title: '预警管理', icon: 'Warning' },
   { path: '/admin', title: '系统管理', icon: 'Setting' },
 ]
@@ -30,180 +34,187 @@ const handleLogout = () => {
 </script>
 
 <template>
-  <el-container class="app-shell">
-    <!-- 侧边栏 -->
-    <el-aside width="240px" class="app-sidebar">
-      <!-- Logo 区 -->
-      <div class="sidebar-brand">
-        <div class="brand-icon">
-          <svg viewBox="0 0 40 40" fill="none">
-            <circle cx="20" cy="20" r="18" fill="rgba(255,255,255,.1)"/>
-            <path d="M12 28 Q20 10 28 28" stroke="white" stroke-width="1.8" fill="none" opacity=".8"/>
-            <path d="M8 30 Q20 16 32 30" stroke="white" stroke-width="1.2" fill="none" opacity=".5"/>
-          </svg>
+  <div class="app-shell">
+    <!-- Banner 头部 -->
+    <header class="app-banner">
+      <div class="banner-bg">
+        <div class="banner-wave"></div>
+      </div>
+      <div class="banner-content">
+        <div class="banner-left">
+          <div class="banner-logo">
+            <svg viewBox="0 0 48 48" fill="none" width="48" height="48">
+              <circle cx="24" cy="24" r="22" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+              <path d="M14 32 Q24 10 34 32" stroke="white" stroke-width="2" fill="none" opacity=".9"/>
+              <path d="M10 34 Q24 16 38 34" stroke="white" stroke-width="1" fill="none" opacity=".5"/>
+            </svg>
+          </div>
+          <div class="banner-title-group">
+            <h1 class="banner-title">南海海洋数据可视化平台</h1>
+            <p class="banner-sub">South China Sea Environmental Data Visualization</p>
+          </div>
         </div>
-        <div class="brand-text">
-          <span class="brand-title">南海海洋数据平台</span>
-          <span class="brand-sub">South China Sea Data</span>
+        <div class="banner-right">
+          <span class="banner-user">
+            👤 {{ authStore.username }}
+            <span v-if="authStore.role === 'ADMIN'" class="banner-admin-badge">管理员</span>
+          </span>
+          <button class="banner-logout" @click="handleLogout">退出</button>
         </div>
       </div>
+    </header>
 
-      <!-- 导航菜单 -->
-      <div class="sidebar-nav">
-        <div class="nav-section-label">主菜单</div>
-        <div
-          v-for="item in menuItems"
-          :key="item.path"
-          class="nav-item"
-          :class="{ active: route.path === item.path }"
-          @click="router.push(item.path)"
-        >
-          <el-icon><component :is="item.icon" /></el-icon>
-          <span>{{ item.title }}</span>
-          <div v-if="route.path === item.path" class="active-indicator" />
-        </div>
-
-        <template v-if="authStore.role === 'ADMIN'">
-          <div class="nav-section-label" style="margin-top:16px">管理</div>
-          <div
-            v-for="item in adminMenus"
+    <!-- 横向导航栏 -->
+    <nav class="app-navbar">
+      <div class="navbar-inner">
+        <div class="navbar-links">
+          <router-link
+            v-for="item in navItems"
             :key="item.path"
-            class="nav-item"
+            :to="item.path"
+            class="navbar-link"
             :class="{ active: route.path === item.path }"
-            @click="router.push(item.path)"
           >
             <el-icon><component :is="item.icon" /></el-icon>
             <span>{{ item.title }}</span>
-            <div v-if="route.path === item.path" class="active-indicator" />
-          </div>
-        </template>
-      </div>
-
-      <!-- 底部波浪装饰 -->
-      <div class="sidebar-wave">
-        <svg viewBox="0 0 240 40" preserveAspectRatio="none">
-          <path d="M0 20 Q30 5 60 20 Q90 35 120 20 Q150 5 180 20 Q210 35 240 20 L240 40 L0 40 Z" fill="rgba(255,255,255,.04)"/>
-          <path d="M0 28 Q40 15 80 28 Q120 41 160 28 Q200 15 240 28 L240 40 L0 40 Z" fill="rgba(255,255,255,.02)"/>
-        </svg>
-      </div>
-    </el-aside>
-
-    <!-- 右侧主体 -->
-    <el-container class="app-main">
-      <!-- 顶栏 -->
-      <el-header class="app-header">
-        <div class="header-left">
-          <span class="header-greeting">👋 欢迎回来，</span>
-          <span class="header-username">{{ authStore.username }}</span>
-          <el-tag
-            v-if="authStore.role === 'ADMIN'"
-            size="small"
-            class="role-tag"
-          >管理员</el-tag>
+          </router-link>
+          <template v-if="authStore.role === 'ADMIN'">
+            <span class="navbar-sep"></span>
+            <router-link
+              v-for="item in adminNavItems"
+              :key="item.path"
+              :to="item.path"
+              class="navbar-link admin-link"
+              :class="{ active: route.path === item.path }"
+            >
+              <el-icon><component :is="item.icon" /></el-icon>
+              <span>{{ item.title }}</span>
+            </router-link>
+          </template>
         </div>
-        <div class="header-right">
-          <div class="header-time">{{ new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' }) }}</div>
-          <el-button class="logout-btn" @click="handleLogout" text>
-            <el-icon><component is="SwitchButton" /></el-icon>
-            退出
-          </el-button>
-        </div>
-      </el-header>
+        <div class="navbar-date">{{ new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' }) }}</div>
+      </div>
+    </nav>
 
-      <!-- 内容区 -->
-      <el-main class="app-content">
-        <router-view />
-      </el-main>
-    </el-container>
-  </el-container>
+    <!-- 页面内容 -->
+    <main class="app-main" :class="{ home: isHome }">
+      <router-view />
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="app-footer">
+      <div class="footer-inner">
+        <div class="footer-col">
+          <strong>南海海洋数据可视化平台</strong>
+          <p>数据来源：国家地球系统科学数据中心<br/>南海再分析数据集（1986 至今）</p>
+        </div>
+        <div class="footer-col">
+          <strong>功能导航</strong>
+          <p>数据大屏 · 数据查询 · 监测地图 · AI 助手<br/>科普知识 · 数据导出 · 预警管理</p>
+        </div>
+        <div class="footer-col">
+          <strong>联系方式</strong>
+          <p>📧 ocean@nmdis.org.cn<br/>📍 信息系统综合实训课程项目</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2026 南海海洋数据可视化平台 · 信息系统综合实训 · 国家海洋信息中心数据支持
+      </div>
+    </footer>
+  </div>
 </template>
 
 <style scoped>
 /* ========== Shell ========== */
-.app-shell { height: 100vh; overflow: hidden; }
-
-/* ========== 侧边栏 ========== */
-.app-sidebar {
-  background: linear-gradient(180deg, #06203a 0%, #0a3d62 40%, #0d5e8a 100%);
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 4px 0 24px rgba(6, 32, 58, .25);
+.app-shell {
+  min-height: 100vh; display: flex; flex-direction: column;
+  background: #f0f5fa;
 }
 
-/* Logo */
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 24px 20px 20px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
+/* ========== Banner ========== */
+.app-banner {
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #04182e 0%, #06203a 30%, #0a3d62 60%, #0d5e8a 100%);
+  flex-shrink: 0;
 }
-.brand-icon svg { width: 42px; height: 42px; display: block; }
-.brand-text { display: flex; flex-direction: column; }
-.brand-title {
-  font-size: 15px; font-weight: 700; color: #fff; letter-spacing: .5px;
+.banner-bg { position: absolute; inset: 0; pointer-events: none; }
+.banner-wave {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 40px;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 40' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 Q75 5 150 20 Q225 35 300 20 Q375 5 450 20 Q525 35 600 20 Q675 5 750 20 Q825 35 900 20 Q975 5 1050 20 Q1125 35 1200 20 L1200 40 L0 40 Z' fill='rgba(255,255,255,.03)'/%3E%3Cpath d='M0 28 Q100 15 200 28 Q300 41 400 28 Q500 15 600 28 Q700 41 800 28 Q900 15 1000 28 Q1100 41 1200 28 L1200 40 L0 40 Z' fill='rgba(255,255,255,.02)'/%3E%3C/svg%3E") repeat-x;
+  background-size: 600px 40px;
 }
-.brand-sub {
-  font-size: 10px; color: rgba(255,255,255,.45); letter-spacing: 1px; text-transform: uppercase;
-}
-
-/* 导航 */
-.sidebar-nav { flex: 1; padding: 12px 12px 0; overflow-y: auto; }
-.nav-section-label {
-  font-size: 11px; color: rgba(255,255,255,.35); text-transform: uppercase;
-  letter-spacing: 1px; padding: 8px 12px 6px;
-}
-.nav-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 11px 16px; margin-bottom: 2px;
-  border-radius: 10px;
-  color: rgba(255,255,255,.65); font-size: 14px;
-  cursor: pointer; transition: all .2s;
-  position: relative;
-}
-.nav-item:hover {
-  background: rgba(255,255,255,.08); color: rgba(255,255,255,.9);
-}
-.nav-item.active {
-  background: rgba(255,255,255,.12); color: #fff; font-weight: 600;
-}
-.active-indicator {
-  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-  width: 3px; height: 24px; background: #06b6d4; border-radius: 0 2px 2px 0;
-}
-
-/* 波浪装饰 */
-.sidebar-wave {
-  height: 50px; overflow: hidden; flex-shrink: 0;
-}
-.sidebar-wave svg { width: 100%; height: 100%; }
-
-/* ========== 顶栏 ========== */
-.app-header {
+.banner-content {
+  position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: space-between;
-  height: 60px; padding: 0 28px;
-  background: rgba(255,255,255,.85); backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(6,182,212,.12);
-  box-shadow: 0 1px 8px rgba(6,32,58,.04);
+  padding: 20px 36px; flex-wrap: wrap; gap: 14px;
 }
-.header-left { display: flex; align-items: center; gap: 8px; }
-.header-greeting { color: #64748b; font-size: 14px; }
-.header-username { color: #0a3d62; font-weight: 700; font-size: 15px; }
-.role-tag {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: #fff; border: none; font-size: 11px; padding: 2px 10px; border-radius: 10px;
+.banner-left { display: flex; align-items: center; gap: 16px; }
+.banner-logo { flex-shrink: 0; }
+.banner-title-group { display: flex; flex-direction: column; }
+.banner-title { color: #fff; font-size: 20px; font-weight: 700; margin: 0; letter-spacing: 1px; }
+.banner-sub { color: rgba(255,255,255,.5); font-size: 11px; margin: 4px 0 0; letter-spacing: 1px; text-transform: uppercase; }
+.banner-right { display: flex; align-items: center; gap: 14px; }
+.banner-user { color: rgba(255,255,255,.85); font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.banner-admin-badge {
+  background: rgba(239,68,68,.25); color: #fca5a5; font-size: 10px;
+  padding: 2px 10px; border-radius: 10px; border: 1px solid rgba(239,68,68,.4);
 }
-.header-right { display: flex; align-items: center; gap: 20px; }
-.header-time { color: #94a3b8; font-size: 13px; }
-.logout-btn { color: #94a3b8; font-size: 13px; }
-.logout-btn:hover { color: #ef4444; }
+.banner-logout {
+  background: rgba(255,255,255,.1); color: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.15);
+  padding: 6px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; transition: .2s;
+}
+.banner-logout:hover { background: rgba(255,255,255,.18); color: #fff; }
 
-/* ========== 内容区 ========== */
-.app-content {
-  background: linear-gradient(160deg, #f0f6fb 0%, #e8f4fd 30%, #f5f9fc 70%, #eef5fa 100%);
-  padding: 24px;
-  overflow-y: auto;
+/* ========== 横向导航栏 ========== */
+.app-navbar {
+  background: #fff; flex-shrink: 0;
+  border-bottom: 1px solid #e8edf4;
+  box-shadow: 0 2px 12px rgba(6,32,58,.06);
+  position: sticky; top: 0; z-index: 100;
+}
+.navbar-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 52px;
+}
+.navbar-links { display: flex; align-items: center; gap: 2px; }
+.navbar-link {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 8px;
+  font-size: 14px; color: #475569; text-decoration: none;
+  transition: all .15s; font-weight: 500;
+}
+.navbar-link:hover { background: #f1f5f9; color: #0a3d62; }
+.navbar-link.active { background: #e8f4fd; color: #0ea5e9; font-weight: 600; }
+.navbar-sep { width: 1px; height: 22px; background: #e2e8f0; margin: 0 6px; }
+.admin-link { color: #64748b; }
+.admin-link.active { background: #fef2f2; color: #ef4444; }
+.navbar-date { font-size: 12px; color: #94a3b8; flex-shrink: 0; }
+
+/* ========== 主体 ========== */
+.app-main {
+  flex: 1;
+}
+.app-main.home { padding: 0; }
+
+/* ========== 页脚 ========== */
+.app-footer {
+  background: #06203a; color: rgba(255,255,255,.7); flex-shrink: 0;
+}
+.footer-inner {
+  max-width: 1280px; margin: 0 auto; padding: 36px 24px 24px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+}
+.footer-col strong { color: #fff; font-size: 14px; display: block; margin-bottom: 8px; }
+.footer-col p { font-size: 12px; line-height: 1.8; margin: 0; }
+.footer-bottom {
+  text-align: center; font-size: 11px; padding: 14px;
+  border-top: 1px solid rgba(255,255,255,.08); color: rgba(255,255,255,.35);
+}
+@media (max-width: 768px) {
+  .footer-inner { grid-template-columns: 1fr; }
+  .navbar-links { overflow-x: auto; }
+  .banner-content { flex-direction: column; text-align: center; }
+  .banner-left { flex-direction: column; }
 }
 </style>
