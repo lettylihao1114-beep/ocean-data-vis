@@ -9,6 +9,10 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
+// Banner 背景图：将 banner.jpg/png 放到 src/assets/，不存在则回退到 CSS 渐变
+const images = import.meta.glob<{ default: string }>('@/assets/banner.*', { eager: true })
+const bannerUrl: string = Object.values(images)[0]?.default || ''
+
 const isHome = computed(() => route.path === '/' || route.path === '/home')
 
 const navItems = [
@@ -37,7 +41,8 @@ const handleLogout = () => {
 <template>
   <div class="app-shell">
     <!-- Banner 头部 -->
-    <header class="app-banner">
+    <header class="app-banner" :style="bannerUrl ? { backgroundImage: `url(${bannerUrl})` } : {}">
+      <div class="banner-overlay"></div>
       <div class="banner-bg">
         <div class="banner-wave"></div>
       </div>
@@ -136,7 +141,13 @@ const handleLogout = () => {
 .app-banner {
   position: relative; overflow: hidden;
   background: linear-gradient(135deg, #04182e 0%, #06203a 30%, #0a3d62 60%, #0d5e8a 100%);
+  background-size: cover; background-position: center; background-repeat: no-repeat;
   flex-shrink: 0;
+}
+.banner-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(4,24,46,.75) 0%, rgba(6,32,58,.6) 50%, rgba(10,61,98,.45) 100%);
+  pointer-events: none; z-index: 0;
 }
 .banner-bg { position: absolute; inset: 0; pointer-events: none; }
 .banner-wave {
