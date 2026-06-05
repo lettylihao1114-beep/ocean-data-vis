@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,6 +52,8 @@ public class AlertController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public R<Void> add(@RequestBody Alert alert) {
+        Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        alert.setCreateBy(userId);
         alertService.add(alert);
         return R.ok("发布成功");
     }
