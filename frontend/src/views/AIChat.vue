@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, nextTick, onBeforeUnmount } from 'vue'
+import SvgIcon from '@/components/SvgIcon.vue'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -158,10 +159,12 @@ onBeforeUnmount(() => abortController?.abort())
   <div class="ai-chat">
     <!-- 头部 -->
     <div class="chat-header">
-      <span class="chat-logo">🤖</span>
+      <span class="chat-logo">
+        <SvgIcon name="bot" :size="28" color="#0ea5e9"/>
+      </span>
       <div>
         <div class="chat-title">南海智答</div>
-        <div class="chat-subtitle">基于大模型的海洋知识 AI 助手</div>
+        <div class="chat-subtitle">DeepSeek + RAG 向量检索增强 · 海洋知识 AI 助手</div>
       </div>
     </div>
 
@@ -200,13 +203,12 @@ onBeforeUnmount(() => abortController?.abort())
 .ai-chat {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 200px);
   background: #fff;
   border-radius: 14px;
-  box-shadow: 0 1px 3px rgba(0,0,0,.06);
-  border: 1px solid #e8edf4;
+  box-shadow: 0 1px 6px rgba(0,0,0,.04);
+  border: 1px solid #eaf0f6;
   overflow: hidden;
-  margin: -4px 0;
 }
 
 /* 头部 */

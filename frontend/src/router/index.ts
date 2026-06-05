@@ -13,8 +13,14 @@ const router = createRouter({
     {
       path: '/',
       component: () => import('@/layout/MainLayout.vue'),
-      redirect: '/dashboard',
+      redirect: '/home',
       children: [
+        {
+          path: 'home',
+          name: 'Home',
+          component: () => import('@/views/Home.vue'),
+          meta: { title: '首页' },
+        },
         {
           path: 'dashboard',
           name: 'Dashboard',
@@ -77,7 +83,7 @@ router.beforeEach((to, _from, next) => {
     next('/login')
   } else if (to.meta.role && to.meta.role !== localStorage.getItem('role')) {
     ElMessage.error('权限不足，仅管理员可访问')
-    next('/dashboard')
+    next('/home')
   } else {
     next()
   }
