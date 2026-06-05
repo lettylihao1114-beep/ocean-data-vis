@@ -309,14 +309,15 @@ function renderBar() {
 /* ========== 整体 ========== */
 .dashboard {
   margin: -24px;
-  background: linear-gradient(175deg, #eef5fa 0%, #e3eff9 30%, #f5f9fc 100%);
+  background: #eef5fa;
   min-height: 100vh;
+  padding-bottom: 32px;
 }
 
 /* ========== Hero 标题栏 ========== */
 .page-hero {
   background: linear-gradient(135deg, #06203a 0%, #0a3d62 50%, #0d5e8a 100%);
-  padding: 28px 36px;
+  padding: 24px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -332,7 +333,7 @@ function renderBar() {
 .hero-content { position: relative; z-index: 1; }
 .hero-title { color: #fff; font-size: 22px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 10px; }
 .hero-icon { font-size: 30px; }
-.hero-sub { color: rgba(255,255,255,.55); font-size: 12px; margin: 6px 0 0; letter-spacing: .5px; }
+.hero-sub { color: rgba(255,255,255,.55); font-size: 12px; margin: 4px 0 0; }
 .hero-stats { display: flex; gap: 24px; position: relative; z-index: 1; }
 .hero-stat {
   text-align: center; padding: 0 20px;
@@ -345,8 +346,8 @@ function renderBar() {
 /* ========== 预警滚动条 ========== */
 .alert-ticker {
   display: flex; align-items: center;
-  margin: 0 24px; background: #fff; border-radius: 0 0 12px 12px;
-  padding: 10px 16px; box-shadow: 0 1px 6px rgba(0,0,0,.04);
+  margin: 0 20px; background: #fff; border-radius: 0 0 12px 12px;
+  padding: 10px 18px; box-shadow: 0 2px 8px rgba(0,0,0,.05);
 }
 .alert-ticker-label {
   flex-shrink: 0; font-weight: 700; font-size: 13px; color: #ef4444;
@@ -368,42 +369,44 @@ function renderBar() {
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 14px; padding: 20px 24px 8px;
+  gap: 14px; padding: 24px 20px 0;
 }
 .stat-card {
   background: #fff; border-radius: 12px;
   display: flex; overflow: hidden;
-  box-shadow: 0 1px 6px rgba(0,0,0,.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
   border: 1px solid #eaf0f6;
   transition: transform .15s, box-shadow .15s;
 }
-.stat-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(6,32,58,.08); }
+.stat-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(6,32,58,.08); }
 .stat-card-accent { width: 4px; flex-shrink: 0; }
 .stat-card-body { padding: 16px 18px; flex: 1; }
 .stat-card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 .stat-card-icon { font-size: 18px; }
 .stat-card-title { font-size: 13px; color: #64748b; font-weight: 500; }
-.stat-card-value { font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 6px; font-family: 'Inter', sans-serif; }
-.stat-card-value small { font-size: 14px; font-weight: 500; }
+.stat-card-value { font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+.stat-card-value small { font-size: 14px; font-weight: 500; color: #94a3b8; }
 .stat-card-meta { font-size: 12px; color: #94a3b8; display: flex; gap: 6px; }
 .stat-sep { color: #d1d5db; }
 
 /* ========== 图表区 ========== */
 .chart-section {
-  padding: 0 24px 16px;
+  padding: 0 20px;
   display: grid; gap: 14px;
+  margin-top: 14px;
 }
 .chart-section.cols-2 { grid-template-columns: 1fr 1fr; }
 @media (max-width: 1080px) { .chart-section.cols-2 { grid-template-columns: 1fr; } }
 .chart-card {
   background: #fff; border-radius: 12px;
-  box-shadow: 0 1px 6px rgba(0,0,0,.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
   border: 1px solid #eaf0f6;
   overflow: hidden;
 }
 .chart-card-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px 0;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #f8fafc;
 }
 .chart-card-header h3 { margin: 0; font-size: 14px; color: #1e293b; font-weight: 600; }
 .chart-card-badge {
@@ -413,7 +416,7 @@ function renderBar() {
 .chart-body { width: 100%; }
 
 /* ========== 监测点位列表 ========== */
-.point-list { padding: 8px 20px 16px; }
+.point-list { padding: 4px 20px 16px; }
 .point-row {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 0; border-bottom: 1px solid #f1f5f9;

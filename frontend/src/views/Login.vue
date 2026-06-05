@@ -77,7 +77,7 @@ const handleSubmit = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(160deg, #071526 0%, #0d2847 35%, #0f3a5c 65%, #0c2340 100%);
+  background: linear-gradient(160deg, #e8f0f8 0%, #dce8f4 35%, #eef4fa 65%, #e0eaf4 100%);
   overflow: hidden;
   position: relative;
 }
@@ -85,8 +85,8 @@ const handleSubmit = async () => {
 .bubble {
   position: absolute;
   bottom: -40px;
-  background: radial-gradient(circle, rgba(0, 210, 255, 0.3), transparent);
-  border: 1px solid rgba(0, 210, 255, 0.1);
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.2), transparent);
+  border: 1px solid rgba(14, 165, 233, 0.12);
   border-radius: 50%;
   animation: rise linear infinite;
 }
@@ -96,7 +96,7 @@ const handleSubmit = async () => {
   padding: 48px 44px;
   background: rgba(255, 255, 255, 0.94);
   border-radius: 20px;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 180, 255, 0.1);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.1), 0 0 40px rgba(14, 165, 233, 0.06);
   position: relative;
   z-index: 1;
   backdrop-filter: blur(20px);

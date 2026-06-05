@@ -122,48 +122,49 @@ onMounted(fetchData)
 <style scoped>
 .page { padding: 4px 0; }
 .page-header { margin-bottom: 20px; }
-.page-header h2 { margin: 0; font-size: 20px; color: #0a3d62; display: flex; align-items: center; gap: 10px; font-weight: 700; }
-.page-header p { margin: 4px 0 0; color: #94a3b8; font-size: 13px; }
+.page-header h2 { margin: 0; font-size: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.page-header p { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; }
 
 /* 分类筛选 */
 .category-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .cat-btn {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 18px; border-radius: 20px; border: 1px solid #e2e8f0;
-  background: #fff; color: #475569; font-size: 13px; cursor: pointer;
+  padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border-default);
+  background: var(--bg-card); color: var(--text-secondary); font-size: 13px; cursor: pointer;
   transition: all .15s; font-weight: 500;
 }
-.cat-btn:hover { border-color: #0ea5e9; color: #0ea5e9; }
-.cat-btn.active { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
+.cat-btn:hover { border-color: var(--border-hover); color: var(--accent-cyan); }
+.cat-btn.active { background: var(--accent-cyan); border-color: var(--accent-cyan); color: #0a1628; font-weight: 600; }
 
 /* 文章网格 */
 .article-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
 .article-card {
-  background: #fff; border-radius: 12px; overflow: hidden;
-  box-shadow: 0 1px 6px rgba(0,0,0,.04); border: 1px solid #eaf0f6;
-  cursor: pointer; transition: transform .15s, box-shadow .15s; display: flex;
+  background: var(--bg-card); backdrop-filter: blur(8px); border-radius: 12px; overflow: hidden;
+  box-shadow: var(--shadow-card); border: 1px solid var(--border-default);
+  cursor: pointer; transition: transform .15s, box-shadow .15s, border-color .15s; display: flex;
 }
-.article-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6,32,58,.08); }
+.article-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--border-hover); }
 .article-cover {
   width: 100px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.02);
 }
 .article-body { padding: 16px 18px; flex: 1; min-width: 0; }
 .article-tags { margin-bottom: 6px; }
 .article-cat { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
-.article-body h3 { margin: 0 0 6px; font-size: 15px; color: #1e293b; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.article-body p { margin: 0 0 10px; font-size: 12px; color: #94a3b8; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.article-meta { display: flex; gap: 14px; font-size: 11px; color: #a0aec0; }
+.article-body h3 { margin: 0 0 6px; font-size: 15px; color: var(--text-primary); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.article-body p { margin: 0 0 10px; font-size: 12px; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.article-meta { display: flex; gap: 14px; font-size: 11px; color: var(--text-muted); }
 
 .pagination-wrap { display: flex; justify-content: center; margin-top: 24px; }
 
 /* 详情弹窗 */
-.detail-meta { display: flex; align-items: center; gap: 14px; padding-bottom: 14px; margin-bottom: 16px; border-bottom: 1px solid #eaf0f6; font-size: 13px; color: #94a3b8; }
+.detail-meta { display: flex; align-items: center; gap: 14px; padding-bottom: 14px; margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); font-size: 13px; color: var(--text-muted); }
 .detail-cat { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 2px 10px; border-radius: 4px; font-weight: 600; }
-.markdown-body { padding: 0 4px; line-height: 1.9; font-size: 15px; color: #333; }
-.markdown-body :deep(h1) { font-size: 24px; border-bottom: 2px solid #0ea5e9; padding-bottom: 8px; color: #0a3d62; }
-.markdown-body :deep(h2) { font-size: 20px; color: #0a3d62; margin-top: 24px; }
-.markdown-body :deep(h3) { font-size: 17px; color: #333; }
-.markdown-body :deep(blockquote) { border-left: 4px solid #0ea5e9; padding: 8px 16px; color: #555; background: #f5f9fc; margin: 12px 0; }
+.markdown-body { padding: 0 4px; line-height: 1.9; font-size: 15px; color: var(--text-secondary); }
+.markdown-body :deep(h1) { font-size: 24px; border-bottom: 2px solid var(--accent-cyan); padding-bottom: 8px; color: var(--text-primary); }
+.markdown-body :deep(h2) { font-size: 20px; color: var(--text-primary); margin-top: 24px; }
+.markdown-body :deep(h3) { font-size: 17px; color: var(--text-secondary); }
+.markdown-body :deep(blockquote) { border-left: 4px solid var(--accent-cyan); padding: 8px 16px; color: var(--text-secondary); background: rgba(0, 229, 255, 0.04); margin: 12px 0; }
 .markdown-body :deep(li) { margin: 4px 0 4px 20px; }
-.markdown-body :deep(b) { color: #0a3d62; }
+.markdown-body :deep(b) { color: var(--accent-cyan); }
 </style>

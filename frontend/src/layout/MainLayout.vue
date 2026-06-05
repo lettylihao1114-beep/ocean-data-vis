@@ -135,10 +135,10 @@ const handleLogout = () => {
 /* ========== Shell ========== */
 .app-shell {
   min-height: 100vh; display: flex; flex-direction: column;
-  background: #f0f5fa;
+  background: var(--bg-primary);
 }
 
-/* ========== Banner ========== */
+/* ========== Banner — 深海蓝渐变，作为页面视觉锚点 ========== */
 .app-banner {
   position: relative; overflow: hidden;
   background: linear-gradient(135deg, #04182e 0%, #06203a 30%, #0a3d62 60%, #0d5e8a 100%);
@@ -162,7 +162,6 @@ const handleLogout = () => {
   height: 100%; min-height: 260px;
   padding: 0 48px;
 }
-/* 顶部栏：用户信息 + 日期 + 退出 */
 .banner-topbar {
   display: flex; align-items: center; justify-content: flex-end; gap: 16px;
   padding: 16px 0;
@@ -181,7 +180,6 @@ const handleLogout = () => {
   padding: 5px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: .2s;
 }
 .banner-logout:hover { background: rgba(255,255,255,.18); color: #fff; }
-/* Hero 区：Logo + 标题 */
 .banner-hero {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   flex: 1; padding-bottom: 30px; gap: 16px; text-align: center;
@@ -191,7 +189,7 @@ const handleLogout = () => {
 .banner-title { color: #fff; font-size: 32px; font-weight: 800; margin: 0; letter-spacing: 2px; text-shadow: 0 2px 12px rgba(0,0,0,.3); }
 .banner-sub { color: rgba(255,255,255,.55); font-size: 13px; margin: 8px 0 0; letter-spacing: 1px; }
 
-/* ========== 横向导航栏 ========== */
+/* ========== 横向导航栏 — 白底清爽风 ========== */
 .app-navbar {
   background: #fff; flex-shrink: 0;
   border-bottom: 1px solid #e8edf4;
@@ -223,7 +221,7 @@ const handleLogout = () => {
 }
 .app-main.home { padding: 0; }
 
-/* ========== 页脚 ========== */
+/* ========== 页脚 — 深蓝底白字，收束页面 ========== */
 .app-footer {
   background: #06203a; color: rgba(255,255,255,.7); flex-shrink: 0;
 }
