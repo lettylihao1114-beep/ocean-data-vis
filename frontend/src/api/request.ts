@@ -22,7 +22,13 @@ request.interceptors.request.use(
 // 响应拦截器 — 统一处理错误
 request.interceptors.response.use(
   (response) => {
-    return response.data
+    const body = response.data
+    // 检查业务状态码，非 200 当作错误处理
+    if (body && typeof body.code === 'number' && body.code !== 200) {
+      ElMessage.error(body.message || '请求失败')
+      return Promise.reject(new Error(body.message || '请求失败'))
+    }
+    return body
   },
   (error) => {
     if (error.response) {

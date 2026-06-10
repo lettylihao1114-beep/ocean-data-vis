@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { knowledgeAPI, monitorAPI, userAPI } from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { Knowledge, MonitorPoint, User } from '@/types'
@@ -33,10 +33,31 @@ const toggleStatus = async (user: User) => {
 
 // 科普管理
 const articles = ref<Knowledge[]>([])
+const allArticles = ref<Knowledge[]>([])
+const articleTotal = ref(0)
+const articlePage = ref(1)
+const articlePageSize = 20
+const articleKeyword = ref('')
 const articleDialog = ref(false)
 const currentArticle = ref<Knowledge>({ title: '', category: '', content: '', status: 'PUBLISHED' })
 const isEdit = ref(false)
-const fetchArticles = async () => { const res: any = await knowledgeAPI.adminList({ pageNum: 1, pageSize: 100 }); articles.value = res.data?.records || [] }
+
+const fetchArticles = async () => {
+  const res: any = await knowledgeAPI.adminList({ pageNum: 1, pageSize: 1000 })
+  allArticles.value = res.data?.records || []
+  filterArticles()
+}
+const filterArticles = () => {
+  let list = [...allArticles.value]
+  if (articleKeyword.value) {
+    const kw = articleKeyword.value.toLowerCase()
+    list = list.filter(a => a.title?.toLowerCase().includes(kw))
+  }
+  articleTotal.value = list.length
+  const start = (articlePage.value - 1) * articlePageSize
+  articles.value = list.slice(start, start + articlePageSize)
+}
+const onArticlePageChange = (p: number) => { articlePage.value = p; filterArticles() }
 const editArticle = (a: Knowledge) => { currentArticle.value = { ...a }; isEdit.value = true; articleDialog.value = true }
 const saveArticle = async () => {
   if (isEdit.value) { await knowledgeAPI.update(currentArticle.value.id!, currentArticle.value); ElMessage.success('修改成功') }
@@ -50,9 +71,30 @@ const deleteArticle = async (id: number) => {
 
 // 监测点管理
 const points = ref<MonitorPoint[]>([])
+const allPoints = ref<MonitorPoint[]>([])
+const pointTotal = ref(0)
+const pointPage = ref(1)
+const pointPageSize = 20
+const pointKeyword = ref('')
 const pointDialog = ref(false)
 const currentPoint = ref<MonitorPoint>({ name: '', longitude: 0, latitude: 0, type: 'WATER_QUALITY', status: 'ACTIVE' })
-const fetchPoints = async () => { const res: any = await monitorAPI.list(); points.value = res.data || [] }
+
+const fetchPoints = async () => {
+  const res: any = await monitorAPI.list()
+  allPoints.value = res.data || []
+  filterPoints()
+}
+const filterPoints = () => {
+  let list = [...allPoints.value]
+  if (pointKeyword.value) {
+    const kw = pointKeyword.value.toLowerCase()
+    list = list.filter(p => p.name?.toLowerCase().includes(kw) || p.type?.toLowerCase().includes(kw))
+  }
+  pointTotal.value = list.length
+  const start = (pointPage.value - 1) * pointPageSize
+  points.value = list.slice(start, start + pointPageSize)
+}
+const onPointPageChange = (p: number) => { pointPage.value = p; filterPoints() }
 const savePoint = async () => {
   if (currentPoint.value.id) { await monitorAPI.update(currentPoint.value.id, currentPoint.value) }
   else { await monitorAPI.add(currentPoint.value) }
@@ -79,8 +121,7 @@ onMounted(() => { fetchUsers(); fetchArticles(); fetchPoints() })
     <!-- 用户管理 -->
     <div v-if="tab === 'users'" class="panel">
       <div class="panel-toolbar">
-        <el-input v-model="userKeyword" placeholder="搜索用户名/邮箱" clearable @keyup.enter="fetchUsers" style="width:260px" size="large" />
-        <el-button size="large" @click="fetchUsers">搜索</el-button>
+        <el-input v-model="userKeyword" placeholder="搜索用户名/邮箱" clearable @keyup.enter="userPage = 1; fetchUsers()" @clear="userPage = 1; fetchUsers()" style="width:260px" size="large" />
       </div>
       <div class="panel-table">
         <el-table :data="users" stripe>
@@ -109,8 +150,9 @@ onMounted(() => { fetchUsers(); fetchArticles(); fetchPoints() })
             </template>
           </el-table-column>
         </el-table>
-        <div class="panel-footer">
-          <el-pagination v-model:current-page="userPage" :total="userTotal" layout="prev, pager, next" @current-change="fetchUsers" size="small" />
+        <div class="panel-footer" v-if="userTotal > 0">
+          <span class="panel-count">共 {{ userTotal }} 个用户</span>
+          <el-pagination :current-page="userPage" :total="userTotal" :page-size="10" layout="total, prev, pager, next" background @current-change="(p: number) => { userPage = p; fetchUsers() }" size="small" />
         </div>
       </div>
     </div>
@@ -118,7 +160,7 @@ onMounted(() => { fetchUsers(); fetchArticles(); fetchPoints() })
     <!-- 科普文章管理 -->
     <div v-if="tab === 'articles'" class="panel">
       <div class="panel-toolbar">
-        <span class="panel-count">共 {{ articles.length }} 篇</span>
+        <el-input v-model="articleKeyword" placeholder="搜索文章标题" clearable @keyup.enter="articlePage = 1; filterArticles()" @clear="articlePage = 1; filterArticles()" style="width:260px" size="large" />
         <el-button type="primary" @click="currentArticle = { title: '', category: '', content: '', status: 'PUBLISHED' }; isEdit = false; articleDialog = true">
           + 新建文章
         </el-button>
@@ -140,31 +182,39 @@ onMounted(() => { fetchUsers(); fetchArticles(); fetchPoints() })
             </template>
           </el-table-column>
         </el-table>
+        <div class="panel-footer" v-if="articleTotal > 0">
+          <span class="panel-count">共 {{ articleTotal }} 篇</span>
+          <el-pagination :current-page="articlePage" :total="articleTotal" :page-size="articlePageSize" layout="total, prev, pager, next" background @current-change="onArticlePageChange" size="small" />
+        </div>
       </div>
     </div>
 
     <!-- 监测点位管理 -->
     <div v-if="tab === 'points'" class="panel">
       <div class="panel-toolbar">
-        <span class="panel-count">共 {{ points.length }} 个点位</span>
+        <el-input v-model="pointKeyword" placeholder="搜索点位名称/类型" clearable @keyup.enter="pointPage = 1; filterPoints()" @clear="pointPage = 1; filterPoints()" style="width:260px" size="large" />
         <el-button type="primary" @click="currentPoint = { name: '', longitude: 0, latitude: 0, type: 'WATER_QUALITY', status: 'ACTIVE' }; pointDialog = true">
           + 新建监测点
         </el-button>
       </div>
       <div class="panel-table">
         <el-table :data="points" stripe>
-          <el-table-column prop="name" label="名称" width="180" />
-          <el-table-column prop="longitude" label="经度" width="90" />
-          <el-table-column prop="latitude" label="纬度" width="85" />
-          <el-table-column prop="type" label="类型" width="100" />
-          <el-table-column prop="status" label="状态" width="90" />
-          <el-table-column label="操作" width="140">
+          <el-table-column prop="name" label="名称" min-width="180" show-overflow-tooltip />
+          <el-table-column prop="longitude" label="经度" min-width="90" />
+          <el-table-column prop="latitude" label="纬度" min-width="85" />
+          <el-table-column prop="type" label="类型" min-width="100" />
+          <el-table-column prop="status" label="状态" min-width="90" />
+          <el-table-column label="操作" min-width="140">
             <template #default="{ row }">
               <el-button size="small" @click="currentPoint = { ...row }; pointDialog = true">编辑</el-button>
               <el-button size="small" type="danger" @click="ElMessageBox.confirm('确定删除该监测点？','警告',{type:'warning'}).then(()=>monitorAPI.delete(row.id!)).then(fetchPoints)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
+        <div class="panel-footer" v-if="pointTotal > 0">
+          <span class="panel-count">共 {{ pointTotal }} 个点位</span>
+          <el-pagination :current-page="pointPage" :total="pointTotal" :page-size="pointPageSize" layout="total, prev, pager, next" background @current-change="onPointPageChange" size="small" />
+        </div>
       </div>
     </div>
 
@@ -220,21 +270,21 @@ onMounted(() => { fetchUsers(); fetchArticles(); fetchPoints() })
 </template>
 
 <style scoped>
-.page { padding: 4px 0; }
+.page { max-width: 1280px; margin: 0 auto; padding: 4px 24px; }
 .page-header { margin-bottom: 20px; }
-.page-header h2 { margin: 0; font-size: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 10px; font-weight: 700; }
-.page-header p { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; }
+.page-header h2 { margin: 0; font-size: 22px; color: #0a3d62; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.page-header p { margin: 4px 0 0; color: #94a3b8; font-size: 13px; }
 
 /* Tab 栏 */
-.tab-bar { display: flex; gap: 4px; margin-bottom: 16px; background: var(--bg-card); backdrop-filter: blur(8px); border-radius: 10px; padding: 4px; box-shadow: var(--shadow-card); border: 1px solid var(--border-default); }
-.tab-btn { padding: 10px 24px; border: none; background: transparent; border-radius: 8px; font-size: 14px; color: var(--text-secondary); cursor: pointer; transition: .15s; font-weight: 500; }
-.tab-btn:hover { background: rgba(0, 229, 255, 0.08); color: var(--accent-cyan); }
-.tab-btn.active { background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); font-weight: 600; }
+.tab-bar { display: flex; gap: 4px; margin-bottom: 18px; background: #fff; border-radius: 12px; padding: 5px; box-shadow: 0 1px 6px rgba(0,0,0,.04); border: 1px solid #eaf0f6; }
+.tab-btn { padding: 10px 28px; border: none; background: transparent; border-radius: 8px; font-size: 14px; color: #64748b; cursor: pointer; transition: .2s; font-weight: 500; }
+.tab-btn:hover { background: #f1f5f9; color: #0a3d62; }
+.tab-btn.active { background: linear-gradient(135deg, #0ea5e9, #06b6d4); color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(14,165,233,.25); }
 
 /* 面板 */
-.panel { background: var(--bg-card); backdrop-filter: blur(8px); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid var(--border-default); }
-.panel-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); }
-.panel-count { font-size: 13px; color: var(--text-muted); }
-.panel-table :deep(.el-table th) { background: rgba(0, 229, 255, 0.05); color: var(--text-secondary); font-weight: 600; }
-.panel-footer { display: flex; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid var(--border-subtle); }
+.panel { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,.04); border: 1px solid #eaf0f6; }
+.panel-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid #f1f5f9; gap: 12px; }
+.panel-count { font-size: 13px; color: #94a3b8; flex-shrink: 0; }
+.panel-table :deep(.el-table th) { background: #f8fafc; color: #475569; font-weight: 600; }
+.panel-footer { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; border-top: 1px solid #f1f5f9; }
 </style>

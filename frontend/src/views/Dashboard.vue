@@ -89,24 +89,24 @@ function renderMap() {
       trigger: 'item',
       formatter: (p: any) => `<b>${p.name}</b><br/>水温: ${p.value[2]}°C<br/>盐度: ${p.value[3]} PSU<br/>溶氧: ${p.value[4]} mg/L`,
     },
-    xAxis: { type: 'value', name: '经度', min: 105, max: 120, axisLabel: { color: TEXT_COLOR }, axisLine: { lineStyle: { color: LINE_COLOR } }, splitLine: { lineStyle: { color: LINE_COLOR } } },
-    yAxis: { type: 'value', name: '纬度', min: 7, max: 26, axisLabel: { color: TEXT_COLOR }, axisLine: { lineStyle: { color: LINE_COLOR } }, splitLine: { lineStyle: { color: LINE_COLOR } } },
+    xAxis: { type: 'value', name: '经度', min: 105, max: 120, nameTextStyle: { color: TEXT_COLOR, fontSize: 11 }, axisLabel: { color: TEXT_COLOR, fontSize: 10 }, axisLine: { lineStyle: { color: LINE_COLOR } }, splitLine: { lineStyle: { color: LINE_COLOR } } },
+    yAxis: { type: 'value', name: '纬度', min: 7, max: 26, nameTextStyle: { color: TEXT_COLOR, fontSize: 11 }, axisLabel: { color: TEXT_COLOR, fontSize: 10 }, axisLine: { lineStyle: { color: LINE_COLOR } }, splitLine: { lineStyle: { color: LINE_COLOR } } },
     series: [{
       type: 'scatter',
-      symbolSize: (val: number[]) => Math.max(14, (val[2] as number - 25) * 7),
+      symbolSize: (val: number[]) => Math.max(12, (val[2] as number - 24) * 6),
       data: data,
       itemStyle: {
-        shadowBlur: 12,
+        shadowBlur: 8,
         shadowColor: 'rgba(14, 165, 233, 0.25)',
         color: (p: any) => {
           const t = p.value[2]
           return t > 30 ? RED : t > 28 ? ORANGE : BLUE
         },
       },
-      label: { show: true, position: 'right', color: '#475569', fontSize: 11, fontWeight: 500 },
+      label: { show: true, position: 'right', color: '#475569', fontSize: 10, fontWeight: 500, distance: 4 },
       emphasis: { scale: 2, itemStyle: { shadowBlur: 20 } },
     }],
-    grid: { left: 55, right: 80, top: 30, bottom: 30 },
+    grid: { left: 45, right: 70, top: 20, bottom: 20 },
   })
 }
 
@@ -124,17 +124,17 @@ function renderTrend() {
   })
   chart.setOption({
     tooltip: { trigger: 'axis' },
-    legend: { bottom: 0, textStyle: { fontSize: 12, color: TEXT_COLOR } },
-    xAxis: { type: 'category', data: times, axisLabel: { color: TEXT_COLOR, fontSize: 11, rotate: 30 }, axisLine: { lineStyle: { color: LINE_COLOR } } },
+    legend: { top: 0, textStyle: { fontSize: 11, color: TEXT_COLOR } },
+    xAxis: { type: 'category', data: times, axisLabel: { color: TEXT_COLOR, fontSize: 10, rotate: 20 }, axisLine: { lineStyle: { color: LINE_COLOR } } },
     yAxis: [
-      { type: 'value', name: '°C', axisLabel: { color: TEXT_COLOR }, splitLine: { lineStyle: { color: LINE_COLOR } } },
-      { type: 'value', name: 'mg/L', axisLabel: { color: TEXT_COLOR }, splitLine: { show: false } },
+      { type: 'value', name: '°C', nameTextStyle: { fontSize: 10 }, axisLabel: { color: TEXT_COLOR, fontSize: 10 }, splitLine: { lineStyle: { color: LINE_COLOR } } },
+      { type: 'value', name: 'mg/L', nameTextStyle: { fontSize: 10 }, axisLabel: { color: TEXT_COLOR, fontSize: 10 }, splitLine: { show: false } },
     ],
     series: [
-      { name: '水温', type: 'line', data: avgTemp, smooth: true, symbol: 'circle', symbolSize: 6, lineStyle: { color: BLUE, width: 2.5 }, itemStyle: { color: BLUE }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(14,165,233,.15)' }, { offset: 1, color: 'rgba(14,165,233,0)' }]) } },
-      { name: '溶氧', type: 'line', yAxisIndex: 1, data: avgOxy, smooth: true, symbol: 'diamond', symbolSize: 6, lineStyle: { color: TEAL, width: 2.5 }, itemStyle: { color: TEAL }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(6,182,212,.15)' }, { offset: 1, color: 'rgba(6,182,212,0)' }]) } },
+      { name: '水温', type: 'line', data: avgTemp, smooth: true, symbol: 'circle', symbolSize: 5, lineStyle: { color: BLUE, width: 2 }, itemStyle: { color: BLUE }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(14,165,233,.12)' }, { offset: 1, color: 'rgba(14,165,233,0)' }]) } },
+      { name: '溶氧', type: 'line', yAxisIndex: 1, data: avgOxy, smooth: true, symbol: 'diamond', symbolSize: 5, lineStyle: { color: TEAL, width: 2 }, itemStyle: { color: TEAL }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(6,182,212,.12)' }, { offset: 1, color: 'rgba(6,182,212,0)' }]) } },
     ],
-    grid: { left: 50, right: 50, top: 25, bottom: 35 },
+    grid: { left: 45, right: 45, top: 30, bottom: 20 },
   })
 }
 
@@ -145,14 +145,15 @@ function renderGauge() {
   const temp = latest?.temperature || 26
   chart.setOption({
     series: [{
-      type: 'gauge', startAngle: 210, endAngle: -30, center: ['50%', '55%'], radius: '85%',
+      type: 'gauge', startAngle: 210, endAngle: -30, center: ['50%', '52%'], radius: '72%',
       min: 0, max: 40,
-      axisLine: { show: true, lineStyle: { width: 20, color: [[0.3, '#06b6d4'], [0.7, '#0ea5e9'], [1, '#ef4444']] } },
+      axisLine: { show: true, lineStyle: { width: 16, color: [[0.3, '#06b6d4'], [0.7, '#0ea5e9'], [1, '#ef4444']] } },
       axisTick: { show: false },
       splitLine: { show: false },
       axisLabel: { show: false },
-      pointer: { length: '60%', width: 6, itemStyle: { color: '#0a3d62' } },
-      detail: { valueAnimation: true, fontSize: 36, color: '#0a3d62', fontWeight: 700, offsetCenter: [0, '60%'], formatter: '{value}°C' },
+      pointer: { length: '55%', width: 5, itemStyle: { color: '#0a3d62' } },
+      detail: { valueAnimation: true, fontSize: 32, color: '#0a3d62', fontWeight: 700, offsetCenter: [0, '55%'], formatter: '{value}°C' },
+      title: { offsetCenter: [0, '82%'], fontSize: 12, color: TEXT_COLOR },
       data: [{ value: temp, name: '当前水温' }],
     }],
   })
@@ -168,16 +169,16 @@ function renderBar() {
   })
   chart.setOption({
     tooltip: { trigger: 'axis', formatter: (p: any) => `${p[0].name}<br/>平均盐度: ${p[0].value} PSU` },
-    xAxis: { type: 'category', data: areas, axisLabel: { color: TEXT_COLOR, fontSize: 10, rotate: 35 }, axisLine: { lineStyle: { color: LINE_COLOR } } },
-    yAxis: { type: 'value', name: 'PSU', axisLabel: { color: TEXT_COLOR }, splitLine: { lineStyle: { color: LINE_COLOR } } },
+    xAxis: { type: 'category', data: areas, axisLabel: { color: TEXT_COLOR, fontSize: 10, rotate: 25, interval: 0 }, axisLine: { lineStyle: { color: LINE_COLOR } } },
+    yAxis: { type: 'value', name: 'PSU', nameTextStyle: { fontSize: 10 }, axisLabel: { color: TEXT_COLOR, fontSize: 10 }, splitLine: { lineStyle: { color: LINE_COLOR } } },
     series: [{
-      type: 'bar', data: salinities, barWidth: '55%',
+      type: 'bar', data: salinities, barWidth: '50%',
       itemStyle: {
-        borderRadius: [6, 6, 0, 0],
+        borderRadius: [5, 5, 0, 0],
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#0ea5e9' }, { offset: 1, color: '#06b6d4' }]),
       },
     }],
-    grid: { left: 45, right: 15, top: 20, bottom: 40 },
+    grid: { left: 42, right: 12, top: 15, bottom: 35 },
   })
 }
 </script>
@@ -187,51 +188,55 @@ function renderBar() {
 
     <!-- 大屏标题 -->
     <div class="page-hero">
-      <div class="hero-content">
-        <h1 class="hero-title">
-          <span class="hero-icon">🌊</span>
-          南海海洋环境数据可视化
-        </h1>
-        <p class="hero-sub">South China Sea Environmental Data Visualization · 国家地球系统科学数据中心</p>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <span class="hero-stat-num">{{ totalPoints }}</span>
-          <span class="hero-stat-label">监测点位</span>
+      <div class="hero-inner">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            <span class="hero-icon">🌊</span>
+            南海海洋环境数据可视化
+          </h1>
+          <p class="hero-sub">South China Sea Environmental Data Visualization · 国家地球系统科学数据中心</p>
         </div>
-        <div class="hero-stat">
-          <span class="hero-stat-num">{{ Object.keys(overviewData).length }}</span>
-          <span class="hero-stat-label">海域覆盖</span>
-        </div>
-        <div class="hero-stat">
-          <span class="hero-stat-num">{{ activeCount }}</span>
-          <span class="hero-stat-label">运行中</span>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-num">{{ totalPoints }}</span>
+            <span class="hero-stat-label">监测点位</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">{{ Object.keys(overviewData).length }}</span>
+            <span class="hero-stat-label">海域覆盖</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">{{ activeCount }}</span>
+            <span class="hero-stat-label">运行中</span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- 预警滚动条 -->
     <div class="alert-ticker" v-if="activeAlerts.length">
-      <div class="alert-ticker-label">⚠️ 预警</div>
-      <div class="alert-ticker-wrap">
-        <div class="alert-ticker-track">
-          <span class="alert-ticker-item" v-for="(a, i) in [...activeAlerts, ...activeAlerts]" :key="`${a.id}-${i}`">
-            <span class="alert-dot" :style="{ background: alertLevelMap[a.level]?.color }"></span>
-            <span class="alert-badge" :style="{ background: alertLevelMap[a.level]?.bg, color: alertLevelMap[a.level]?.color }">{{ alertLevelMap[a.level]?.label }}</span>
-            {{ a.title }}
-          </span>
+      <div class="alert-ticker-inner">
+        <div class="alert-ticker-label">⚠️ 预警</div>
+        <div class="alert-ticker-wrap">
+          <div class="alert-ticker-track">
+            <span class="alert-ticker-item" v-for="(a, i) in [...activeAlerts, ...activeAlerts]" :key="`${a.id}-${i}`">
+              <span class="alert-dot" :style="{ background: alertLevelMap[a.level]?.color }"></span>
+              <span class="alert-badge" :style="{ background: alertLevelMap[a.level]?.bg, color: alertLevelMap[a.level]?.color }">{{ alertLevelMap[a.level]?.label }}</span>
+              {{ a.title }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- 统计卡片 -->
     <div class="stat-grid">
-      <div class="stat-card" v-for="(item, key) in overviewData" :key="key">
+      <div class="stat-card" v-for="[area, item] in Object.entries(overviewData).slice(0, 10)" :key="area">
         <div class="stat-card-accent" :style="{ background: (item.temperature ?? 0) > 30 ? '#ef4444' : '#0ea5e9' }"></div>
         <div class="stat-card-body">
           <div class="stat-card-header">
             <span class="stat-card-icon">{{ (item.temperature ?? 0) > 30 ? '🔥' : '💧' }}</span>
-            <span class="stat-card-title">{{ key }}</span>
+            <span class="stat-card-title">{{ area }}</span>
           </div>
           <div class="stat-card-value" :style="{ color: (item.temperature ?? 0) > 30 ? '#ef4444' : '#0a3d62' }">
             {{ item.temperature ?? '--' }}<small>°C</small>
@@ -308,20 +313,14 @@ function renderBar() {
 <style scoped>
 /* ========== 整体 ========== */
 .dashboard {
-  margin: -24px;
-  background: #eef5fa;
+  margin: 0;
+  background: linear-gradient(175deg, #eef5fa 0%, #e3eff9 30%, #f5f9fc 100%);
   min-height: 100vh;
-  padding-bottom: 32px;
 }
 
 /* ========== Hero 标题栏 ========== */
 .page-hero {
   background: linear-gradient(135deg, #06203a 0%, #0a3d62 50%, #0d5e8a 100%);
-  padding: 24px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap; gap: 16px;
   position: relative;
   overflow: hidden;
 }
@@ -330,11 +329,20 @@ function renderBar() {
   position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
   background: linear-gradient(90deg, #06b6d4, #0ea5e9, #3b82f6);
 }
-.hero-content { position: relative; z-index: 1; }
+.hero-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 24px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+  position: relative; z-index: 1;
+}
+.hero-content { }
 .hero-title { color: #fff; font-size: 22px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 10px; }
 .hero-icon { font-size: 30px; }
-.hero-sub { color: rgba(255,255,255,.55); font-size: 12px; margin: 4px 0 0; }
-.hero-stats { display: flex; gap: 24px; position: relative; z-index: 1; }
+.hero-sub { color: rgba(255,255,255,.55); font-size: 12px; margin: 6px 0 0; letter-spacing: .5px; }
+.hero-stats { display: flex; gap: 24px; }
 .hero-stat {
   text-align: center; padding: 0 20px;
   border-left: 1px solid rgba(255,255,255,.15);
@@ -346,8 +354,14 @@ function renderBar() {
 /* ========== 预警滚动条 ========== */
 .alert-ticker {
   display: flex; align-items: center;
-  margin: 0 20px; background: #fff; border-radius: 0 0 12px 12px;
-  padding: 10px 18px; box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  background: #fff; border-radius: 0 0 12px 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.04);
+}
+.alert-ticker-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 10px 24px;
+  display: flex; align-items: center;
+  width: 100%;
 }
 .alert-ticker-label {
   flex-shrink: 0; font-weight: 700; font-size: 13px; color: #ef4444;
@@ -369,44 +383,45 @@ function renderBar() {
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 14px; padding: 24px 20px 0;
+  gap: 14px; padding: 20px 24px 8px;
+  max-width: 1280px; margin: 0 auto;
 }
 .stat-card {
   background: #fff; border-radius: 12px;
   display: flex; overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  box-shadow: 0 1px 6px rgba(0,0,0,.04);
   border: 1px solid #eaf0f6;
   transition: transform .15s, box-shadow .15s;
 }
-.stat-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(6,32,58,.08); }
+.stat-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(6,32,58,.08); }
 .stat-card-accent { width: 4px; flex-shrink: 0; }
 .stat-card-body { padding: 16px 18px; flex: 1; }
 .stat-card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 .stat-card-icon { font-size: 18px; }
 .stat-card-title { font-size: 13px; color: #64748b; font-weight: 500; }
-.stat-card-value { font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
-.stat-card-value small { font-size: 14px; font-weight: 500; color: #94a3b8; }
+.stat-card-value { font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 6px; font-family: 'Inter', sans-serif; }
+.stat-card-value small { font-size: 14px; font-weight: 500; }
 .stat-card-meta { font-size: 12px; color: #94a3b8; display: flex; gap: 6px; }
 .stat-sep { color: #d1d5db; }
 
 /* ========== 图表区 ========== */
 .chart-section {
-  padding: 0 20px;
+  padding: 0 24px 16px;
   display: grid; gap: 14px;
-  margin-top: 14px;
+  max-width: 1280px; margin: 0 auto;
 }
 .chart-section.cols-2 { grid-template-columns: 1fr 1fr; }
 @media (max-width: 1080px) { .chart-section.cols-2 { grid-template-columns: 1fr; } }
 .chart-card {
   background: #fff; border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  box-shadow: 0 1px 6px rgba(0,0,0,.04);
   border: 1px solid #eaf0f6;
   overflow: hidden;
+  padding-bottom: 12px;
 }
 .chart-card-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px 12px;
-  border-bottom: 1px solid #f8fafc;
+  padding: 16px 20px 0;
 }
 .chart-card-header h3 { margin: 0; font-size: 14px; color: #1e293b; font-weight: 600; }
 .chart-card-badge {
@@ -416,21 +431,21 @@ function renderBar() {
 .chart-body { width: 100%; }
 
 /* ========== 监测点位列表 ========== */
-.point-list { padding: 4px 20px 16px; }
+.point-list { padding: 4px 20px 12px; max-height: 252px; overflow-y: auto; }
 .point-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid #f1f5f9;
 }
 .point-row:last-child { border-bottom: none; }
-.point-status { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.point-status.on { background: #10b981; box-shadow: 0 0 6px rgba(16,185,129,.4); }
-.point-status.warn { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,.4); }
+.point-status { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.point-status.on { background: #10b981; box-shadow: 0 0 5px rgba(16,185,129,.4); }
+.point-status.warn { background: #f59e0b; box-shadow: 0 0 5px rgba(245,158,11,.4); }
 .point-status.off { background: #94a3b8; }
 .point-info { flex: 1; min-width: 0; }
-.point-name { font-size: 13px; color: #1e293b; font-weight: 500; }
-.point-type { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+.point-name { font-size: 12px; color: #1e293b; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.point-type { font-size: 10px; color: #94a3b8; margin-top: 1px; }
 .point-tag {
-  font-size: 11px; padding: 2px 10px; border-radius: 10px; font-weight: 500;
+  font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; flex-shrink: 0;
 }
 .point-tag.on { background: #ecfdf5; color: #10b981; }
 .point-tag.warn { background: #fffbeb; color: #f59e0b; }
