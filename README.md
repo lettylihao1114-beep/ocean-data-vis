@@ -18,6 +18,7 @@
 - 🗺️ **污染监测地图** — Leaflet 交互式地图 + 10 个监测点位
 - 🔐 **三级权限体系** — Spring Security + JWT + RBAC（GUEST / USER / ADMIN）
 - ⚡ **Redis 缓存加速** — DTO 层 7 个独立 TTL 缓存 + Cache-Aside 模式
+- 👤 **个人中心** — 查看/编辑个人资料 + 修改密码，Banner 下拉菜单入口
 
 数据来源：国家地球系统科学数据中心 — 南海再分析数据集（1986 至今）  
 https://ocean.geodata.cn/
@@ -28,7 +29,7 @@ https://ocean.geodata.cn/
 
 | 姓名 | 学号 | GitHub | 角色 | 负责模块 |
 |------|------|--------|------|---------|
-| 黎浩 | — | [lettylihao1114-beep](https://github.com/lettylihao1114-beep) | 后端架构师 + 全栈开发 | 系统架构设计、数据库设计、Spring Boot 后端、JWT+RBAC 认证、RESTful API、安全防护（XSS/SQL注入）、Redis DTO 层缓存（7 TTL + Cache-Aside）、API 文档（Knife4j）、用户管理模块、AI 大模型流式对话 + RAG 向量检索增强（DeepSeek + SiliconFlow 嵌入）、环境变量安全化、代码审查与优化 |
+| 黎浩 | — | [lettylihao1114-beep](https://github.com/lettylihao1114-beep) | 后端架构师 + 全栈开发 | 系统架构设计、数据库设计、Spring Boot 后端、JWT+RBAC 认证、RESTful API、安全防护（XSS/SQL注入）、Redis DTO 层缓存（7 TTL + Cache-Aside）、API 文档（Knife4j）、用户管理模块、个人中心模块、AI 大模型流式对话 + RAG 向量检索增强（DeepSeek + SiliconFlow 嵌入）、环境变量安全化、代码审查与优化 |
 | 郑伟民 | — | [buliish](https://github.com/buliish) | 前端开发 + 数据可视化 | Vue3 前端框架、Leaflet 地图可视化、ECharts 数据大屏、业务页面（查询/预警/科普/导出/管理/AI助手）、前后端联调、ER 图、实训报告 |
 
 ### 详细分工
@@ -47,6 +48,7 @@ https://ocean.geodata.cn/
 ├── 全局异常拦截器（GlobalExceptionHandler）
 ├── Knife4j / Swagger API 文档
 ├── 用户管理模块（角色切换 / 账号启停）
+├── 个人中心模块（资料查看编辑 / 密码修改）🆕
 ├── AI 大模型流式对话（SSE + DeepSeek API）+ RAG 向量检索增强（SiliconFlow BGE 嵌入 + 余弦相似度 Top-3 + 阈值过滤）
 ├── 注册密码校验增强（字母+数字组合）
 ├── 环境变量安全化（java-dotenv + .env + ${ENV_VAR} 占位符）
@@ -62,7 +64,7 @@ https://ocean.geodata.cn/
 ├── 数据查询页（多维筛选 + 分页表格）
 ├── 预警管理页面 + 科普知识页面
 ├── 数据导出页面（Excel/CSV + 图表 PNG）
-├── 用户管理后台页面
+├── 用户管理后台页面 + 个人中心页面 🆕
 ├── 前后端 API 联调测试
 ├── ER 图绘制
 └── 实训报告 + 实训日志撰写
@@ -79,6 +81,7 @@ https://ocean.geodata.cn/
 | 监测地图 | ✅ | ✅ | ✅ |
 | 数据查询 / 导出 | ❌ | ✅ | ✅ |
 | AI 智能助手 | ❌ | ✅ | ✅ |
+| 个人中心（查看/编辑资料/改密） | ❌ | ✅ | ✅ |
 | 预警管理（发布/解除/列表） | ❌ | ❌ | ✅ |
 | 科普管理 / 用户管理 | ❌ | ❌ | ✅ |
 
@@ -86,7 +89,7 @@ https://ocean.geodata.cn/
 
 ---
 
-## 四、功能模块（8 个）
+## 四、功能模块（9 个）
 
 ```
 Module 01 — 用户认证
@@ -132,6 +135,12 @@ Module 08 — AI 智能助手「南海智答」🆕
   │   └── 降级策略：嵌入 API 故障 → 自动退化为普通对话
   ├── 智能引导：知识库未命中 → 拒绝回答 + 推荐 7 个话题
   └── 参考文档：docs/RAG.md
+
+Module 09 — 个人中心 🆕
+  ├── 查看个人资料（用户名/角色/邮箱/手机号/注册时间）
+  ├── 编辑资料（邮箱 + 手机号）
+  ├── 修改密码（旧密码验证 + BCrypt 加密更新）
+  └── Banner 用户下拉菜单入口（个人中心 + 退出登录）
 ```
 
 ---
@@ -148,7 +157,7 @@ Module 08 — AI 智能助手「南海智答」🆕
 ┌───────────────────────┴──────────────────────────────────┐
 │             后端服务 (Spring Boot 3.2)                    │
 │  Spring Security │ JWT │ MyBatis-Plus │ Redis            │
-│  8 Controller → 10 Service → Mapper → Entity            │
+│  9 Controller → 11 Service → Mapper → Entity            │
 │                                                          │
 │  AI 模块：AiService → KnowledgeVectorStore               │
 │           → EmbeddingService (SiliconFlow BGE)           │
@@ -206,8 +215,8 @@ ocean-data-vis/
 ├── frontend/                     # Vue3 前端
 │   └── src/
 │       ├── api/                 # Axios 接口封装
-│       ├── views/               # 10 页面（Login/Dashboard/DataQuery/MonitorMap/
-│       │                          Alerts/Knowledge/Export/AIChat/Admin）
+│       ├── views/               # 12 页面（Home/Login/Dashboard/DataQuery/MonitorMap/
+│       │                          Alerts/Knowledge/Export/AIChat/Profile/Admin）
 │       ├── components/          # 复用组件（图表卡片/地图/表格）
 │       ├── store/               # Pinia 状态管理
 │       └── router/              # 路由 + 角色权限守卫
@@ -215,8 +224,8 @@ ocean-data-vis/
 │   ├── .env.example             # 环境变量模板（可提交 Git）
 │   ├── .env                     # 本地环境变量（gitignored）
 │   └── src/main/java/com/ocean/
-│       ├── controller/          # 8 个 REST Controller
-│       ├── service/             # 10 个 Service
+│       ├── controller/          # 9 个 REST Controller
+│       ├── service/             # 11 个 Service
 │       │   ├── AiService.java           # DeepSeek SSE 流式对话
 │       │   ├── EmbeddingService.java    # SiliconFlow 向量嵌入
 │       │   └── KnowledgeVectorStore.java # RAG 向量存储与检索
@@ -230,6 +239,7 @@ ocean-data-vis/
 │   └── seed.sql                 # 测试数据（6 篇科普 + 3 测试账号）
 └── docs/                         # 文档
     ├── RAG.md                   # RAG 架构详解
+    ├── PRD-个人中心.md           # 个人中心 PRD 🆕
     ├── requirements.md          # 需求分析
     ├── api-design.md            # 接口设计
     └── er-diagram.md            # ER 图
