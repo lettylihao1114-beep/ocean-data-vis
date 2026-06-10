@@ -82,6 +82,27 @@ export interface User {
   createTime?: string
 }
 
+// 个人中心
+export interface UserProfile {
+  id: number
+  username: string
+  email: string
+  phone: string
+  avatar: string
+  role: string
+  createTime: string
+}
+
+export interface UpdateProfileRequest {
+  email?: string
+  phone?: string
+}
+
+export interface ChangePasswordRequest {
+  oldPassword: string
+  newPassword: string
+}
+
 // 科普
 export interface Knowledge {
   id?: number

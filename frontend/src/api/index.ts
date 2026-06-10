@@ -50,6 +50,13 @@ export const userAPI = {
   updateStatus: (id: number, status: number) => request.put(`/api/admin/users/${id}/status`, { status }),
 }
 
+// 个人中心
+export const profileAPI = {
+  getProfile: () => request.get('/api/user/profile'),
+  updateProfile: (data: any) => request.put('/api/user/profile', data),
+  changePassword: (data: any) => request.put('/api/user/password', data),
+}
+
 // 导出
 export const exportAPI = {
   excel: (query?: any) => request.post('/api/export/excel', query, { responseType: 'blob' }),

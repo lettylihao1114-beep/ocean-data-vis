@@ -9,6 +9,8 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
+const goProfile = () => router.push('/profile')
+
 // Banner 背景图：将 banner.jpg/png 放到 src/assets/，不存在则回退到 CSS 渐变
 const images = import.meta.glob<{ default: string }>('@/assets/banner.*', { eager: true })
 const bannerUrl: string = Object.values(images)[0]?.default || ''
@@ -48,12 +50,24 @@ const handleLogout = () => {
       </div>
       <div class="banner-content">
         <div class="banner-topbar">
-          <span class="banner-topbar-welcome">
-            <SvgIcon name="user" :size="14"/> {{ authStore.username }}
-            <span v-if="authStore.role === 'ADMIN'" class="banner-admin-badge">管理员</span>
-          </span>
+          <el-dropdown trigger="click" @command="(cmd: string) => cmd === 'profile' ? goProfile() : handleLogout()">
+            <span class="banner-topbar-welcome banner-user-dropdown">
+              <SvgIcon name="user" :size="14"/> {{ authStore.username }}
+              <span v-if="authStore.role === 'ADMIN'" class="banner-admin-badge">管理员</span>
+              <span class="dropdown-arrow">▾</span>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="profile">
+                  <SvgIcon name="user" :size="13" /> 个人中心
+                </el-dropdown-item>
+                <el-dropdown-item command="logout" divided>
+                  <SvgIcon name="trash" :size="13" /> 退出登录
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
           <span class="banner-topbar-date">{{ new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' }) }}</span>
-          <button class="banner-logout" @click="handleLogout">退出</button>
         </div>
         <div class="banner-hero">
           <div class="banner-logo">
@@ -170,16 +184,18 @@ const handleLogout = () => {
   color: rgba(255,255,255,.75); font-size: 13px;
   display: flex; align-items: center; gap: 6px;
 }
+.banner-user-dropdown {
+  cursor: pointer; user-select: none;
+  padding: 5px 10px; border-radius: 6px;
+  transition: background .15s;
+}
+.banner-user-dropdown:hover { background: rgba(255,255,255,.1); }
+.dropdown-arrow { font-size: 9px; color: rgba(255,255,255,.4); margin-left: 2px; }
 .banner-topbar-date { color: rgba(255,255,255,.4); font-size: 12px; }
 .banner-admin-badge {
   background: rgba(239,68,68,.25); color: #fca5a5; font-size: 10px;
   padding: 2px 10px; border-radius: 10px; border: 1px solid rgba(239,68,68,.4);
 }
-.banner-logout {
-  background: rgba(255,255,255,.08); color: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.15);
-  padding: 5px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: .2s;
-}
-.banner-logout:hover { background: rgba(255,255,255,.18); color: #fff; }
 .banner-hero {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   flex: 1; padding-bottom: 30px; gap: 16px; text-align: center;
