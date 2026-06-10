@@ -10,12 +10,16 @@ export const useAuthStore = defineStore('auth', () => {
 
   const login = async (data: LoginRequest) => {
     const res: any = await authAPI.login(data)
-    token.value = res.data.token
-    username.value = res.data.username
-    role.value = res.data.role
-    localStorage.setItem('token', res.data.token)
-    localStorage.setItem('username', res.data.username)
-    localStorage.setItem('role', res.data.role)
+    const payload = res?.data
+    if (!payload) {
+      throw new Error(res?.message || '登录失败')
+    }
+    token.value = payload.token
+    username.value = payload.username
+    role.value = payload.role
+    localStorage.setItem('token', payload.token)
+    localStorage.setItem('username', payload.username)
+    localStorage.setItem('role', payload.role)
     return res
   }
 

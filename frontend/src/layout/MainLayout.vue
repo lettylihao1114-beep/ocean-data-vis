@@ -198,10 +198,11 @@ const handleLogout = () => {
 }
 .navbar-inner {
   max-width: 1280px; margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: center;
   padding: 0 24px; height: 52px;
 }
 .navbar-links { display: flex; align-items: center; gap: 2px; }
+.navbar-date { display: none; }
 .navbar-link {
   display: flex; align-items: center; gap: 6px;
   padding: 8px 16px; border-radius: 8px;
@@ -218,8 +219,8 @@ const handleLogout = () => {
 /* ========== 主体 ========== */
 .app-main {
   flex: 1;
+  padding: 0;
 }
-.app-main.home { padding: 0; }
 
 /* ========== 页脚 — 深蓝底白字，收束页面 ========== */
 .app-footer {

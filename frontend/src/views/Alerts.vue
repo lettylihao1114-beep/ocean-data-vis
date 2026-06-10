@@ -153,43 +153,38 @@ onMounted(fetchData)
 </template>
 
 <style scoped>
-.page { padding: 4px 0; }
+.page { max-width: 1280px; margin: 0 auto; padding: 4px 24px; }
 .page-header { margin-bottom: 20px; }
-.page-header h2 { margin: 0; font-size: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 10px; font-weight: 700; }
-.page-header p { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; }
+.page-header h2 { margin: 0; font-size: 22px; color: #0a3d62; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.page-header p { margin: 4px 0 0; color: #94a3b8; font-size: 13px; }
 
 /* 活跃预警卡片 */
 .alert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-bottom: 20px; }
-.alert-card { background: var(--bg-card); backdrop-filter: blur(8px); border-radius: 12px; display: flex; overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid var(--border-default); animation: fadeInUp 0.4s ease-out both; }
-.alert-card:nth-child(1) { animation-delay: 0s; }
-.alert-card:nth-child(2) { animation-delay: 0.1s; }
-.alert-card:nth-child(3) { animation-delay: 0.2s; }
-.alert-card:nth-child(4) { animation-delay: 0.3s; }
-.alert-card.level-red { animation: glowPulse 3s ease-in-out infinite; }
-.alert-card.level-red { border-color: rgba(255, 82, 82, 0.3); }
-.alert-card.level-orange { border-color: rgba(255, 145, 0, 0.3); }
-.alert-card.level-yellow { border-color: rgba(234, 179, 8, 0.3); }
+.alert-card { background: #fff; border-radius: 12px; display: flex; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,.04); border: 1px solid #eaf0f6; }
+.alert-card.level-red { border-color: #fecaca; }
+.alert-card.level-orange { border-color: #fed7aa; }
+.alert-card.level-yellow { border-color: #fef08a; }
 .alert-card-bar { width: 4px; flex-shrink: 0; }
-.alert-card.level-red .alert-card-bar { background: var(--accent-red); }
-.alert-card.level-orange .alert-card-bar { background: var(--accent-orange); }
+.alert-card.level-red .alert-card-bar { background: #ef4444; }
+.alert-card.level-orange .alert-card-bar { background: #f59e0b; }
 .alert-card.level-yellow .alert-card-bar { background: #eab308; }
-.alert-card.level-info .alert-card-bar { background: var(--accent-blue); }
+.alert-card.level-info .alert-card-bar { background: #3b82f6; }
 .alert-card-body { padding: 16px 18px; flex: 1; }
 .alert-card-top { display: flex; gap: 8px; margin-bottom: 8px; }
 .alert-card-level { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
-.alert-card-level.level-red { color: var(--accent-red); background: rgba(255, 82, 82, 0.12); }
-.alert-card-level.level-orange { color: var(--accent-orange); background: rgba(255, 145, 0, 0.12); }
-.alert-card-level.level-yellow { color: #eab308; background: rgba(234, 179, 8, 0.12); }
-.alert-card-level.level-info { color: var(--accent-blue); background: rgba(41, 121, 255, 0.12); }
-.alert-card-type { font-size: 12px; color: var(--text-secondary); }
-.alert-card-body h4 { margin: 0 0 6px; font-size: 15px; color: var(--text-primary); }
-.alert-card-body p { margin: 0 0 8px; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
-.alert-card-meta { display: flex; gap: 12px; font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.alert-card-level.level-red { color: #ef4444; background: #fef2f2; }
+.alert-card-level.level-orange { color: #f59e0b; background: #fffbeb; }
+.alert-card-level.level-yellow { color: #eab308; background: #fefce8; }
+.alert-card-level.level-info { color: #3b82f6; background: #eff6ff; }
+.alert-card-type { font-size: 12px; color: #64748b; }
+.alert-card-body h4 { margin: 0 0 6px; font-size: 15px; color: #1e293b; }
+.alert-card-body p { margin: 0 0 8px; font-size: 12px; color: #94a3b8; line-height: 1.5; }
+.alert-card-meta { display: flex; gap: 12px; font-size: 11px; color: #a0aec0; margin-bottom: 10px; }
 .resolve-btn { margin-top: 4px; }
 
 /* 表格 */
-.table-card { background: var(--bg-card); backdrop-filter: blur(8px); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid var(--border-default); }
-.table-card :deep(.el-table th) { background: rgba(0, 229, 255, 0.05); color: var(--text-secondary); font-weight: 600; }
-.table-topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); }
-.table-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.table-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,.04); border: 1px solid #eaf0f6; }
+.table-card :deep(.el-table th) { background: #f8fafc; color: #475569; font-weight: 600; }
+.table-topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f1f5f9; }
+.table-title { font-size: 14px; font-weight: 600; color: #1e293b; }
 </style>

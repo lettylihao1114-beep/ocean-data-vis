@@ -104,7 +104,7 @@ const handleSubmit = async () => {
 .logo-icon { text-align: center; font-size: 48px; margin-bottom: 8px; }
 .login-card h1 { text-align: center; font-size: 20px; color: #0a3d62; margin-bottom: 4px; font-weight: 700; }
 .subtitle { text-align: center; color: #888; margin-bottom: 28px; font-size: 14px; }
-.login-btn { background: linear-gradient(135deg, #0984e3, #00b894); border: none; height: 48px; font-size: 16px; letter-spacing: 4px; }
+.login-btn { width: 100%; background: linear-gradient(135deg, #0984e3, #00b894); border: none; height: 48px; font-size: 16px; letter-spacing: 4px; }
 .login-btn:hover { background: linear-gradient(135deg, #0773c5, #00a381); }
 .toggle { text-align: center; margin-top: 20px; color: #aaa; font-size: 13px; }
 .toggle a { color: #0984e3; text-decoration: none; font-weight: 600; }
